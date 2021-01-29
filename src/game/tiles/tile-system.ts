@@ -3,6 +3,11 @@ import { registerWithPriority } from '../../register-system'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { Tile } from './tile'
 
+/**
+ * How to use from other systems:
+ * const tileSystem = world.getSystem(TileSystem)
+ * const tileEntity = tileSystem.getTileAt(new Coordinate({x: 1, y: 2, z: 3}))
+ */
 @registerWithPriority(1)
 class TileSystem extends System {
 
