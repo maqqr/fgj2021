@@ -4,6 +4,7 @@ import { Tile, TileType } from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
 
 export const TileWidth = 50
+export const Radius = 5
 
 const typeWeights = [
     { type: TileType.Forest, weight: 50 },
@@ -61,7 +62,6 @@ export const selectTileType = (totalWeight: number, weights: any) => {
 }
 
 export function initializeCoordinates(world: World) {
-    const Radius = 5
     const startingValue = -Radius
     const endingValue = Radius
 
@@ -101,26 +101,28 @@ export function getDistance(a: Coordinate, b: Coordinate){
 export function randomInt(min: number, max: number): number {
     min = Math.ceil(min)
     max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min + 1)) + min
+    return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 /** magnitude 3 gives random coordinate within range x: [-3, 3], y: [-3, 3], z: [-3, 3] */
 export function getRandomCoordinate(magnitude: number): Coordinate {
     const rx = randomInt(-magnitude, magnitude)
-    let ry = randomInt(-magnitude, magnitude)
-
-    if (rx + ry > magnitude) {
-        ry = magnitude - rx
+    let yMin = -magnitude
+    let yMax = magnitude
+    if (rx < 0) {
+        yMin = -(magnitude + rx)
     }
-    else if (rx - ry < magnitude) {
-        ry = -magnitude + rx
+    if (rx > 0) {
+        yMax = magnitude - rx
     }
+    const ry = randomInt(yMin, yMax)
 
-    const rz = rx - ry
+    const rz = 0 - rx - ry
 
     if (rx + ry + rz !== 0) {
         console.error("getRandomCoordinate generated invalid coordinate")
     }
 
+    console.log(''+rx + ' ' + ry + ' ' + rz)
     return new Coordinate({ x: rx, y: ry, z: rz })
 }

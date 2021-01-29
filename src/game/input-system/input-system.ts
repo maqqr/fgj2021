@@ -1,13 +1,8 @@
-/* @jsx h */
-// @ts-ignore
-import { h, render } from 'petit-dom'
 import { Not, System } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { Position, Velocity } from '../components'
 import { RenderSystem } from '../test-stuff/render-system'
-import { Game } from '../constants'
 import { XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
-import { Coordinate, coordinateEquals } from '../coordinate-system/coordinate'
+import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { Unit } from '../units/unit'
 import { Selected } from './selected'
