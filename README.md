@@ -6,8 +6,11 @@ Development
 
 First time setup:
 
+Install recent version of node and npm first.
+
 ```
 npm install
+npm rebuild node-sass
 ```
 
 Start local development server (`http://localhost:5000`):
