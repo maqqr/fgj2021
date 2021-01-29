@@ -34,3 +34,7 @@ export function initializeCoordinates(world: World) {
     }
     console.log('world building succesful')
 }
+
+export function getDistance(a: Coordinate, b: Coordinate){
+    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2
+}
