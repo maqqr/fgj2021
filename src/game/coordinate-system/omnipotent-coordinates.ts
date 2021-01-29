@@ -82,10 +82,14 @@ function cubeRound(cube: {x: number, y: number, z: number}) {
 }
 
 export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWidth) => {
-    const q = (Math.sqrt(3)/3 * x  -  1./3 * y) / hexSideSize
-    const r = (                       2./3 * y) / hexSideSize
+    const q = (Math.sqrt(3) / 3 * x - 1.0 / 3.0 * y) / hexSideSize
+    const r = (2.0 / 3.0 * y) / hexSideSize
     const axial = { q, r }
-    return new Coordinate(cubeRound(axialToCube(axial)))
+    const cube = cubeRound(axialToCube(axial))
+    // No idea why these have to be done, but it works now
+    cube.x -= 1
+    cube.y += 1
+    return new Coordinate(cube)
 }
 
 export const selectTileType = (totalWeight: number, weights: any) => {
