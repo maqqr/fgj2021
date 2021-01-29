@@ -1,6 +1,7 @@
 import { World } from 'ecsy'
 import { Position, Velocity } from './components'
 import { Player } from './test-stuff/example-components'
+import { initializeCoordinates } from '../game/coordinate-system/omnipotent-coordinates'
 
 export function initializeEntities(world: World) {
     // Create one player entity
@@ -8,6 +9,7 @@ export function initializeEntities(world: World) {
     playerEntity.addComponent(Player)
     playerEntity.addComponent(Position)
     playerEntity.addComponent(Velocity, { x: 1, y: 2 })
+    initializeCoordinates(world)
 
     // Returns number between [-1.0, 1.0]
     const rnd = () => (Math.random() - 0.5) * 2.0
