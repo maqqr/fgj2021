@@ -6,7 +6,7 @@ import { registerWithPriority } from '../../register-system'
 import { Not } from 'ecsy'
 import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
-import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coordinates'
+import { coordinateToXY, TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Tile, TileType } from '../tiles/tile'
 import { Unit } from '../units/unit'
 import { Resource, ResourceType } from '../tiles/resource'
@@ -54,8 +54,11 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             return
         }
 
+        const cameraX = 300
+        const cameraY = 300
+
         this.state.renderer.clear()
-        this.state.renderer.setCameraOffset({x: 300, y: 300})
+        this.state.renderer.setCameraOffset({x: cameraX, y: cameraY})
 
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
@@ -116,6 +119,11 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                 "Selection.png", TileWidth * 1.1, TileWidth * 1.1)
             this.state.renderer.drawCircle(pos.x, pos.y, 10, Color.red)
         })
+
+        const mouse = this.state.renderer.convertToGameCoordinates(this.state.renderer.getMouseUiPosition())
+        const mouseHex = XYToCoordinate(mouse.x - cameraX, mouse.y - cameraY, TileWidth)
+        const circlePos = coordinateToXY(mouseHex)
+        this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
 
         this.state.renderer.render()
     }
