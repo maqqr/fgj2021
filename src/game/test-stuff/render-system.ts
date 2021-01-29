@@ -10,6 +10,7 @@ import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coord
 import { Tile, TileType } from '../tiles/tile'
 import { Unit } from '../units/unit'
 import { Resource, ResourceType } from '../tiles/resource'
+import { Selected } from '../input-system/selected'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -17,14 +18,25 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile] },
-        resources: { components: [Coordinate, Resource]},
+        resources: { components: [Coordinate, Resource] },
         units: { components: [Coordinate, Unit] },
+        selection: { components: [Coordinate, Selected] },
     }
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
         renderer.initialize()
-        renderer.loadTextures(["test.png", "mountain.png", "tile.png", "forest.png", "ore.png", "mushrooms.png", "deer.png", "error.png"])
+        renderer.loadTextures([
+            "test.png",
+            "mountain.png",
+            "tile.png",
+            "forest.png",
+            "ore.png",
+            "mushrooms.png",
+            "deer.png",
+            "Selection.png",
+            "error.png"
+        ])
 
 
         window.addEventListener("resize", renderer.resize.bind(renderer))
@@ -96,6 +108,13 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
             this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
                 tileSprite, TileWidth, TileWidth)
+        })
+
+        this.queries.selection.results.forEach(entity => {
+            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            this.state.renderer.drawTexture(pos.x - TileWidth / 2, pos.y - TileWidth / 2,
+                "Selection.png", TileWidth * 1.1, TileWidth * 1.1)
+            this.state.renderer.drawCircle(pos.x, pos.y, 10, Color.red)
         })
 
         this.state.renderer.render()

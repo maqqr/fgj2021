@@ -36,11 +36,13 @@ const resourceWeights = [{
     }
 ]
 
+const magicalHeight = Math.sqrt(3)
+
 export const WorldCoordinates = new Array<Coordinate>()
 
 export const coordinateToXY = (coordinate: Coordinate, tileWidth: number = TileWidth) => {
     const x = tileWidth + coordinate.x * 0.5 * tileWidth + coordinate.y * -0.5 * tileWidth
-    const y = Math.sqrt(3) * tileWidth * 0.5 * coordinate.z
+    const y = magicalHeight * tileWidth * 0.5 * coordinate.z
     return { x, y }
 }
 
@@ -104,21 +106,21 @@ export function randomInt(min: number, max: number): number {
 
 /** magnitude 3 gives random coordinate within range x: [-3, 3], y: [-3, 3], z: [-3, 3] */
 export function getRandomCoordinate(magnitude: number): Coordinate {
-    const x = randomInt(-magnitude, magnitude)
-    let y = randomInt(-magnitude, magnitude)
+    const rx = randomInt(-magnitude, magnitude)
+    let ry = randomInt(-magnitude, magnitude)
 
-    if (x + y > magnitude) {
-        y = magnitude - x
+    if (rx + ry > magnitude) {
+        ry = magnitude - rx
     }
-    else if (x - y < magnitude) {
-        y = -magnitude + x
+    else if (rx - ry < magnitude) {
+        ry = -magnitude + rx
     }
 
-    const z = x - y
+    const rz = rx - ry
 
-    if (x + y + z !== 0) {
+    if (rx + ry + rz !== 0) {
         console.error("getRandomCoordinate generated invalid coordinate")
     }
 
-    return new Coordinate({ x, y, z })
+    return new Coordinate({ x: rx, y: ry, z: rz })
 }

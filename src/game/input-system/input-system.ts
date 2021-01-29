@@ -8,6 +8,7 @@ import { RenderSystem } from '../test-stuff/render-system'
 import { Game } from '../constants'
 import { XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Coordinate, coordinateEquals } from '../coordinate-system/coordinate'
+import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { Unit } from '../units/unit'
 import { Selected } from './selected'
 
@@ -18,21 +19,20 @@ class InputSystem extends System {
     }
 
     init() {
-        window.addEventListener('click', this.handleMouseClick)
+        window.addEventListener('click', (evt: any) => this.handleMouseClick(evt))
     }
 
-    handleMouseClick(evt: any) {
+    handleMouseClick = (evt: any) => {
         const pixiRenderer = (this.world.getSystem(RenderSystem) as RenderSystem).getRenderer()
         const mouse = pixiRenderer.getMouseUiPosition()
         const gameMouse = pixiRenderer.convertToGameCoordinates(mouse)
 
         const coordinate = XYToCoordinate(gameMouse.x, gameMouse.y)
+        const coordinateSystem = this.world.getSystem(CoordinateSystem)
+        const entity = coordinateSystem.getUnitAt(coordinate)!
 
-        this.queries.entities.results.forEach(entity => {
-            const candidateCoordinate = entity.getComponent(Coordinate)!
-            if (coordinateEquals(coordinate, candidateCoordinate)) {
-                entity.addComponent(Selected)
-            }
+        if (entity && !entity.getComponent(Selected)) {
+            entity.addComponent(Selected)
         }
     }
 

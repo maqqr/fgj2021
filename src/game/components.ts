@@ -9,6 +9,7 @@ import './tiles/revealed'
 import './tiles/tile'
 import './tiles/visible'
 import './input-system/selected'
+import './input-system/input-system'
 
 export function registerComponents(world: World): void {
     for (const componentConstructor of getRegisteredComponents()) {

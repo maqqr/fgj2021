@@ -5,7 +5,7 @@ import { Unit } from "../units/unit"
 import { Coordinate } from "./coordinate"
 
 @registerWithPriority(1)
-class CoordinateSystem extends System {
+export class CoordinateSystem extends System {
 
     private tileCache: { [id: string]: Entity } | null = null
     private unitCache: { [id: string]: Entity }
