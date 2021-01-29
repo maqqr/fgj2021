@@ -41,7 +41,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         }
 
         this.state.renderer.clear()
-        this.state.renderer.setCameraOffset({x: 0, y: 0})
+        this.state.renderer.setCameraOffset({x: 300, y: 300})
 
         // this.queries.players.results.forEach(entity => {
         //     const position = entity.getComponent(Position)!
@@ -56,7 +56,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
-            this.state.renderer.drawTexture(300 + asPosition.x, 300 + asPosition.y, "tile.png", TileWidth, TileWidth)
+            this.state.renderer.drawTexture(asPosition.x, asPosition.y, "tile.png", TileWidth, TileWidth)
         })
 
         this.state.renderer.render()
