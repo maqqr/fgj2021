@@ -73,7 +73,7 @@ export function initializeCoordinates(world: World) {
                 const coordinateEntity = world.createEntity()
                 coordinateEntity.addComponent(Coordinate, { x, y, z })
 
-                //Perhaps in own code later
+                // Perhaps in own code later
                 const selectedType = selectTileType(totalTypeWeight, typeWeights)
                 coordinateEntity.addComponent(Tile, { tileType: selectedType })
 
@@ -82,7 +82,6 @@ export function initializeCoordinates(world: World) {
                     .map(w => w.weight)
                     .reduce((old, current) => old + current, 0)
                 const selectedResource = selectTileType(totalResourceWeight, typeArray.typedWeights)
-
 
                 if (selectedResource !== null && selectedResource !== ResourceType.Invalid) {
                     coordinateEntity.addComponent(Resource, { resource: selectedResource })

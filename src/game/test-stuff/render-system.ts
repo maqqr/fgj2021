@@ -94,7 +94,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x, asPosition.y, tileSprite, TileWidth, TileWidth)
+            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
+                tileSprite, TileWidth, TileWidth)
         })
 
         this.state.renderer.render()
