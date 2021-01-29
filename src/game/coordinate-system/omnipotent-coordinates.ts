@@ -1,6 +1,7 @@
 import { Coordinate } from "./coordinate"
 import { World } from 'ecsy'
 import { Tile, TileType } from "../tiles/tile"
+import { Resource, ResourceType } from "../tiles/resource"
 
 export const TileWidth = 50
 
@@ -9,9 +10,31 @@ const typeWeights = [
     { type: TileType.Mountain, weight: 20 },
     { type: TileType.Snow, weight: 70 },
 ]
-const totalWeight = typeWeights
+const totalTypeWeight = typeWeights
     .map(x => x.weight)
     .reduce((old, current) => old + current, 0)
+
+const resourceWeights = [{
+    tileType: TileType.Forest,
+    typedWeights: [
+        { type: ResourceType.Deer, weight: 5 },
+        { type: ResourceType.Mushrooms, weight: 5 },
+        { type: ResourceType.Invalid, weight: 70 },
+    ]
+    }, {
+    tileType: TileType.Mountain,
+    typedWeights: [
+            { type: ResourceType.Ore, weight: 15 },
+            { type: ResourceType.Invalid, weight: 70 },
+    ],
+    }, {
+    tileType: TileType.Snow,
+    typedWeights: [
+        { type: ResourceType.Deer, weight: 15 },
+        { type: ResourceType.Invalid, weight: 70 },
+    ],
+    }
+]
 
 export const WorldCoordinates = new Array<Coordinate>()
 
@@ -25,15 +48,15 @@ export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWid
 
 }
 
-export const selectTileType = () : TileType => {
+export const selectTileType = (totalWeight: number, weights: any) => {
     let weighter = Math.random() * totalWeight
-    for (const iterator of typeWeights) {
+    for (const iterator of weights) {
         weighter -= iterator.weight
         if (weighter <= 0) {
             return iterator.type
         }
     }
-    return TileType.Invalid
+    return null
 }
 
 export function initializeCoordinates(world: World) {
@@ -51,9 +74,20 @@ export function initializeCoordinates(world: World) {
                 const coordinateEntity = world.createEntity()
                 coordinateEntity.addComponent(Coordinate, { x, y, z })
 
-                const selectedType = selectTileType()
                 //Perhaps in own code later
+                const selectedType = selectTileType(totalTypeWeight, typeWeights)
                 coordinateEntity.addComponent(Tile, { tileType: selectedType })
+
+                const typeArray = resourceWeights.find(rw => rw.tileType === selectedType)!
+                const totalResourceWeight = typeArray.typedWeights
+                    .map(w => w.weight)
+                    .reduce((old, current) => old + current, 0)
+                const selectedResource = selectTileType(totalResourceWeight, typeArray.typedWeights)
+
+
+                if (selectedResource !== null && selectedResource !== ResourceType.Invalid) {
+                    coordinateEntity.addComponent(Resource, { resource: selectedResource })
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coordinates'
 import { Tile, TileType } from '../tiles/tile'
 import { Unit } from '../units/unit'
+import { Resource, ResourceType } from '../tiles/resource'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -16,13 +17,14 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile] },
+        resources: { components: [Coordinate, Resource]},
         units: { components: [Coordinate, Unit] },
     }
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
         renderer.initialize()
-        renderer.loadTextures(["test.png", "mountain.png", "tile.png", "forest.png", "error.png"])
+        renderer.loadTextures(["test.png", "mountain.png", "tile.png", "forest.png", "ore.png", "mushrooms.png", "deer.png", "error.png"])
 
 
         window.addEventListener("resize", renderer.resize.bind(renderer))
@@ -70,6 +72,29 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.units.results.forEach(entity => {
             const pos = coordinateToXY(entity.getComponent(Coordinate)!)
             this.state.renderer.drawCircle(pos.x, pos.y, 10, Color.red)
+        })
+
+        this.queries.resources.results.forEach(entity => {
+            const coordinate = entity.getComponent(Coordinate, false)!
+            const asPosition = coordinateToXY(coordinate)
+            const tile = entity.getComponent(Resource)!
+            let tileSprite
+            switch (tile.resource) {
+                case ResourceType.Deer:
+                    tileSprite = "deer.png"
+                    break
+                case ResourceType.Mushrooms:
+                    tileSprite = "mushrooms.png"
+                    break
+                case ResourceType.Ore:
+                    tileSprite = "ore.png"
+                    break
+                default:
+                    tileSprite = "error.png"
+                    break
+            }
+
+            this.state.renderer.drawTexture(asPosition.x, asPosition.y, tileSprite, TileWidth, TileWidth)
         })
 
         this.state.renderer.render()
