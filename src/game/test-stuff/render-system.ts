@@ -40,6 +40,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         }
 
         this.state.renderer.clear()
+        this.state.renderer.setCameraOffset({x: 0, y: 0})
 
         this.queries.players.results.forEach(entity => {
             const position = entity.getComponent(Position)!

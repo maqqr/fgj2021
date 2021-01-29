@@ -212,7 +212,9 @@ export class PixiRenderer {
     }
 
     public setCameraOffset(offset: {x: number, y: number }) {
-        // this.stage.setTransform(offset.x, offset.y, 0, 0, 0, 0, 0, 0, 0)
-        // this.stage.containerUpdateTransform()
+        this.spriteStage.setTransform(offset.x, offset.y, 0, 0, 0, 0, 0, 0, 0)
+        this.spriteStage.updateTransform()
+        this.graphicsStage.setTransform(offset.x, offset.y, 0, 0, 0, 0, 0, 0, 0)
+        this.graphicsStage.updateTransform()
     }
 }
