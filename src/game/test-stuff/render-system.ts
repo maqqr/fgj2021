@@ -7,7 +7,7 @@ import { Not } from 'ecsy'
 import { Player } from "./example-components"
 import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
-import { coordinateToXY } from '../coordinate-system/omnipotent-coordinates'
+import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coordinates'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -54,7 +54,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
-            this.state.renderer.drawCircle(asPosition.x, asPosition.y, 10, Color.blue)
+            this.state.renderer.drawCircle(300 + asPosition.x, 300 + asPosition.y, TileWidth * 0.5, Color.blue)
         })
 
         this.state.renderer.render()

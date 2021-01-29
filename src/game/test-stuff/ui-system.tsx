@@ -8,7 +8,7 @@ import { Player } from './example-components'
 import { RenderSystem } from './render-system'
 import { Game } from '../constants'
 
-@registerWithPriority(4)
+// @registerWithPriority(4)
 class GUITestSystem extends System {
     static queries = {
         players: { components: [Player, Position] },
