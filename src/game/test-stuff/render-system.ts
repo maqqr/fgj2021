@@ -8,6 +8,7 @@ import { Player } from "./example-components"
 import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coordinates'
+import { Tile, TileType } from '../tiles/tile'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -16,13 +17,13 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         players: { components: [Position, Player] },
         notPlayers: { components: [Position, Not(Player)] },
-        coordinates: { components: [Coordinate] }
+        coordinates: { components: [Coordinate, Tile] }
     }
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
         renderer.initialize()
-        renderer.loadTextures(["test.png", "tile.png"])
+        renderer.loadTextures(["test.png", "mountain.png", "tile.png", "forest.png", "error.png"])
 
 
         window.addEventListener("resize", renderer.resize.bind(renderer))
@@ -56,7 +57,24 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
-            this.state.renderer.drawTexture(asPosition.x, asPosition.y, "tile.png", TileWidth, TileWidth)
+            const tile = entity.getComponent(Tile)!
+            let tileSprite
+            switch (tile.tileType) {
+                case TileType.Forest:
+                    tileSprite = "forest.png"
+                    break
+                case TileType.Snow:
+                    tileSprite = "tile.png"
+                    break
+                case TileType.Mountain:
+                    tileSprite = "mountain.png"
+                    break
+                default:
+                    tileSprite = "error.png"
+                    break
+            }
+
+            this.state.renderer.drawTexture(asPosition.x, asPosition.y, tileSprite, TileWidth, TileWidth)
         })
 
         this.state.renderer.render()

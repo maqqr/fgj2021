@@ -4,6 +4,10 @@ import { registerComponent, getRegisteredComponents } from '../register-componen
 // All components in other files must be included here to be compiled
 import './test-stuff/example-components'
 import './coordinate-system/coordinate'
+import './tiles/resource'
+import './tiles/revealed'
+import './tiles/tile'
+import './tiles/visible'
 
 export function registerComponents(world: World): void {
     for (const componentConstructor of getRegisteredComponents()) {

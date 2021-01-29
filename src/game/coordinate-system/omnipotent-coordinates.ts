@@ -1,7 +1,17 @@
 import { Coordinate } from "./coordinate"
 import { World } from 'ecsy'
+import { Tile, TileType } from "../tiles/tile"
 
 export const TileWidth = 50
+
+const typeWeights = [
+    { type: TileType.Forest, weight: 50 },
+    { type: TileType.Mountain, weight: 20 },
+    { type: TileType.Snow, weight: 70 },
+]
+const totalWeight = typeWeights
+    .map(x => x.weight)
+    .reduce((old, current) => old + current, 0)
 
 export const WorldCoordinates = new Array<Coordinate>()
 
@@ -13,6 +23,17 @@ export const coordinateToXY = (coordinate: Coordinate, tileWidth: number = TileW
 
 export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWidth) => {
 
+}
+
+export const selectTileType = () : TileType => {
+    let weighter = Math.random() * totalWeight
+    for (const iterator of typeWeights) {
+        weighter -= iterator.weight
+        if (weighter <= 0) {
+            return iterator.type
+        }
+    }
+    return TileType.Invalid
 }
 
 export function initializeCoordinates(world: World) {
@@ -29,10 +50,13 @@ export function initializeCoordinates(world: World) {
                 }
                 const coordinateEntity = world.createEntity()
                 coordinateEntity.addComponent(Coordinate, { x, y, z })
+
+                const selectedType = selectTileType()
+                //Perhaps in own code later
+                coordinateEntity.addComponent(Tile, { tileType: selectedType })
             }
         }
     }
-    console.log('world building succesful')
 }
 
 export function getDistance(a: Coordinate, b: Coordinate){
