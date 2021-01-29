@@ -6,6 +6,7 @@ import { Game } from './constants'
 // All systems in other files must be included here to be compiled
 import './test-stuff/render-system'
 import './test-stuff/ui-system'
+import './tiles/tile-system'
 
 export function registerSystems(world: World): void {
     // Register all @registerWithPriority systems
