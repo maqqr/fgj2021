@@ -22,7 +22,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
         renderer.initialize()
-        renderer.loadTextures(["test.png"])
+        renderer.loadTextures(["test.png", "tile.png"])
+
 
         window.addEventListener("resize", renderer.resize.bind(renderer))
         renderer.resize()
@@ -54,7 +55,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
-            this.state.renderer.drawCircle(300 + asPosition.x, 300 + asPosition.y, TileWidth * 0.5, Color.blue)
+            this.state.renderer.drawTexture(300 + asPosition.x, 300 + asPosition.y, "tile.png", TileWidth, TileWidth)
         })
 
         this.state.renderer.render()
