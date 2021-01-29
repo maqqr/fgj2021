@@ -16,7 +16,7 @@ export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWid
 }
 
 export function initializeCoordinates(world: World) {
-    const Radius = 3
+    const Radius = 5
     const startingValue = -Radius
     const endingValue = Radius
 
