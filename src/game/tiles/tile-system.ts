@@ -1,7 +1,5 @@
-import { World, System, Entity } from 'ecsy'
-import { Position, Velocity } from '../components'
-import { getPrioritySystems, registerWithPriority } from '../../register-system'
-import { Game } from '../constants'
+import { System, Entity } from 'ecsy'
+import { registerWithPriority } from '../../register-system'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { Tile } from './tile'
 
