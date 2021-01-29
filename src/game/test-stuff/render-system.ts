@@ -42,15 +42,15 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
         this.state.renderer.clear()
 
-        this.queries.players.results.forEach(entity => {
-            const position = entity.getComponent(Position)!
-            this.state.renderer.drawCircle(position.x, position.y, 10, Color.red)
-        })
+        // this.queries.players.results.forEach(entity => {
+        //     const position = entity.getComponent(Position)!
+        //     this.state.renderer.drawCircle(position.x, position.y, 10, Color.red)
+        // })
 
-        this.queries.notPlayers.results.forEach(entity => {
-            const position = entity.getComponent(Position)!
-            this.state.renderer.drawTexture(position.x, position.y, "test.png")
-        })
+        // this.queries.notPlayers.results.forEach(entity => {
+        //     const position = entity.getComponent(Position)!
+        //     this.state.renderer.drawTexture(position.x, position.y, "test.png")
+        // })
 
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
