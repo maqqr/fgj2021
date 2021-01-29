@@ -9,6 +9,7 @@ import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coordinates'
 import { Tile, TileType } from '../tiles/tile'
+import { Resource, ResourceType } from '../tiles/resource'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -17,13 +18,14 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         players: { components: [Position, Player] },
         notPlayers: { components: [Position, Not(Player)] },
-        coordinates: { components: [Coordinate, Tile] }
+        coordinates: { components: [Coordinate, Tile] },
+        resources: { components: [Coordinate, Resource]}
     }
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
         renderer.initialize()
-        renderer.loadTextures(["test.png", "mountain.png", "tile.png", "forest.png", "error.png"])
+        renderer.loadTextures(["test.png", "mountain.png", "tile.png", "forest.png", "ore.png", "mushrooms.png", "deer.png", "error.png"])
 
 
         window.addEventListener("resize", renderer.resize.bind(renderer))
@@ -68,6 +70,29 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
                 case TileType.Mountain:
                     tileSprite = "mountain.png"
+                    break
+                default:
+                    tileSprite = "error.png"
+                    break
+            }
+
+            this.state.renderer.drawTexture(asPosition.x, asPosition.y, tileSprite, TileWidth, TileWidth)
+        })
+
+        this.queries.resources.results.forEach(entity => {
+            const coordinate = entity.getComponent(Coordinate, false)!
+            const asPosition = coordinateToXY(coordinate)
+            const tile = entity.getComponent(Resource)!
+            let tileSprite
+            switch (tile.resource) {
+                case ResourceType.Deer:
+                    tileSprite = "deer.png"
+                    break
+                case ResourceType.Mushrooms:
+                    tileSprite = "mushrooms.png"
+                    break
+                case ResourceType.Ore:
+                    tileSprite = "ore.png"
                     break
                 default:
                     tileSprite = "error.png"
