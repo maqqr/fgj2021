@@ -1,7 +1,5 @@
-(Project name here)
-===================
-
-This is an empty project for a game with hot module reload and ECS.
+FGJ 2021
+========
 
 Development
 -----------
