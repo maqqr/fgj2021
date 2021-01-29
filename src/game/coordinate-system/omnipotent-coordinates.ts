@@ -44,9 +44,8 @@ export const coordinateToXY = (coordinate: Coordinate, tileWidth: number = TileW
     return { x, y }
 }
 
-export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWidth) => {
-
-}
+export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWidth) =>
+    new Coordinate({x:0, y: 0, z:0 })
 
 export const selectTileType = (totalWeight: number, weights: any) => {
     let weighter = Math.random() * totalWeight
