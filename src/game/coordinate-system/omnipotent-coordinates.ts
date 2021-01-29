@@ -62,3 +62,31 @@ export function initializeCoordinates(world: World) {
 export function getDistance(a: Coordinate, b: Coordinate){
     return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2
 }
+
+/** Returns random whole number between min and max (both inclusive) */
+export function randomInt(min: number, max: number): number {
+    min = Math.ceil(min)
+    max = Math.floor(max)
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+/** magnitude 3 gives random coordinate within range x: [-3, 3], y: [-3, 3], z: [-3, 3] */
+export function getRandomCoordinate(magnitude: number): Coordinate {
+    const rx = randomInt(-magnitude, magnitude)
+    let ry = randomInt(-magnitude, magnitude)
+
+    if (rx + ry > magnitude) {
+        ry = magnitude - rx
+    }
+    else if (rx - ry < magnitude) {
+        ry = -magnitude + rx
+    }
+
+    const rz = rx - ry
+
+    if (rx + ry + rz !== 0) {
+        console.error("getRandomCoordinate generated invalid coordinate")
+    }
+
+    return new Coordinate({ x: rx, y: ry, z: rz })
+}

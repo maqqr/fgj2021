@@ -4,20 +4,19 @@ import { Color } from '../color'
 import { Position } from '../components'
 import { registerWithPriority } from '../../register-system'
 import { Not } from 'ecsy'
-import { Player } from "./example-components"
 import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth } from '../coordinate-system/omnipotent-coordinates'
 import { Tile, TileType } from '../tiles/tile'
+import { Unit } from '../units/unit'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
 @registerWithPriority(100)
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
-        players: { components: [Position, Player] },
-        notPlayers: { components: [Position, Not(Player)] },
-        coordinates: { components: [Coordinate, Tile] }
+        coordinates: { components: [Coordinate, Tile] },
+        units: { components: [Coordinate, Unit] },
     }
 
     initializeState() {
@@ -44,16 +43,6 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.state.renderer.clear()
         this.state.renderer.setCameraOffset({x: 300, y: 300})
 
-        // this.queries.players.results.forEach(entity => {
-        //     const position = entity.getComponent(Position)!
-        //     this.state.renderer.drawCircle(position.x, position.y, 10, Color.red)
-        // })
-
-        // this.queries.notPlayers.results.forEach(entity => {
-        //     const position = entity.getComponent(Position)!
-        //     this.state.renderer.drawTexture(position.x, position.y, "test.png")
-        // })
-
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -74,7 +63,13 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x, asPosition.y, tileSprite, TileWidth, TileWidth)
+            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
+                tileSprite, TileWidth, TileWidth)
+        })
+
+        this.queries.units.results.forEach(entity => {
+            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            this.state.renderer.drawCircle(pos.x, pos.y, 10, Color.red)
         })
 
         this.state.renderer.render()
