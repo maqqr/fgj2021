@@ -14,15 +14,27 @@ const totalTypeWeight = typeWeights
     .map(x => x.weight)
     .reduce((old, current) => old + current, 0)
 
-const resourceWeights = [
-    { type: ResourceType.Deer, weight: 5 },
-    { type: ResourceType.Mushrooms, weight: 5 },
-    { type: ResourceType.Ore, weight: 10 },
-    { type: ResourceType.Invalid, weight: 90 },
+const resourceWeights = [{
+    tileType: TileType.Forest,
+    typedWeights: [
+        { type: ResourceType.Deer, weight: 5 },
+        { type: ResourceType.Mushrooms, weight: 5 },
+        { type: ResourceType.Invalid, weight: 70 },
+    ]
+    }, {
+    tileType: TileType.Mountain,
+    typedWeights: [
+            { type: ResourceType.Ore, weight: 15 },
+            { type: ResourceType.Invalid, weight: 70 },
+    ],
+    }, {
+    tileType: TileType.Snow,
+    typedWeights: [
+        { type: ResourceType.Deer, weight: 15 },
+        { type: ResourceType.Invalid, weight: 70 },
+    ],
+    }
 ]
-const totalResourceWeight = resourceWeights
-    .map(x => x.weight)
-    .reduce((old, current) => old + current, 0)
 
 export const WorldCoordinates = new Array<Coordinate>()
 
@@ -66,7 +78,13 @@ export function initializeCoordinates(world: World) {
                 const selectedType = selectTileType(totalTypeWeight, typeWeights)
                 coordinateEntity.addComponent(Tile, { tileType: selectedType })
 
-                const selectedResource = selectTileType(totalResourceWeight, resourceWeights)
+                const typeArray = resourceWeights.find(rw => rw.tileType === selectedType)!
+                const totalResourceWeight = typeArray.typedWeights
+                    .map(w => w.weight)
+                    .reduce((old, current) => old + current, 0)
+                const selectedResource = selectTileType(totalResourceWeight, typeArray.typedWeights)
+
+
                 if (selectedResource !== null && selectedResource !== ResourceType.Invalid) {
                     coordinateEntity.addComponent(Resource, { resource: selectedResource })
                 }
