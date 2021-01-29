@@ -38,6 +38,7 @@ const resourceWeights = [{
 ]
 
 const magicalHeight = Math.sqrt(3)
+const hexSideSize = TileWidth / Math.sqrt(3)
 
 export const WorldCoordinates = new Array<Coordinate>()
 
@@ -47,8 +48,45 @@ export const coordinateToXY = (coordinate: Coordinate, tileWidth: number = TileW
     return { x, y }
 }
 
-export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWidth) =>
-    new Coordinate({x:0, y: 0, z:0 })
+function cubeToAxial(cube: {x: number, y: number, z: number}) {
+    return { x: cube.x, y: cube.z }
+}
+
+function axialToCube(hex: {r: number, q: number}) {
+    const x = hex.q
+    const z = hex.r
+    const y = -x - z
+    return { x, y, z }
+}
+
+function cubeRound(cube: {x: number, y: number, z: number}) {
+    let x = Math.round(cube.x)
+    let y = Math.round(cube.y)
+    let z = Math.round(cube.z)
+
+    const xDiff = Math.abs(x - cube.x)
+    const yDiff = Math.abs(y - cube.y)
+    const zDiff = Math.abs(z - cube.z)
+
+    if (xDiff > yDiff && xDiff > zDiff) {
+        x = -y - z
+    }
+    else if (yDiff > zDiff) {
+        y = -x - z
+    }
+    else {
+        z = -x - y
+    }
+
+    return { x, y, z }
+}
+
+export const XYToCoordinate = (x: number, y: number, tileWidth: number = TileWidth) => {
+    const q = (Math.sqrt(3)/3 * x  -  1./3 * y) / hexSideSize
+    const r = (                       2./3 * y) / hexSideSize
+    const axial = { q, r }
+    return new Coordinate(cubeRound(axialToCube(axial)))
+}
 
 export const selectTileType = (totalWeight: number, weights: any) => {
     let weighter = Math.random() * totalWeight
