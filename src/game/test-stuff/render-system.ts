@@ -6,6 +6,8 @@ import { registerWithPriority } from '../../register-system'
 import { Not } from 'ecsy'
 import { Player } from "./example-components"
 import { Game } from '../constants'
+import { Coordinate } from '../coordinate-system/coordinate'
+import { coordinateToXY } from '../coordinate-system/omnipotent-coordinates'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -13,7 +15,8 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         players: { components: [Position, Player] },
-        notPlayers: { components: [Position, Not(Player)] }
+        notPlayers: { components: [Position, Not(Player)] },
+        coordinates: { components: [Coordinate] }
     }
 
     initializeState() {
@@ -46,6 +49,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.notPlayers.results.forEach(entity => {
             const position = entity.getComponent(Position)!
             this.state.renderer.drawTexture(position.x, position.y, "test.png")
+        })
+
+        this.queries.coordinates.results.forEach(entity => {
+            const coordinate = entity.getComponent(Coordinate, false)!
+            const asPosition = coordinateToXY(coordinate)
+            this.state.renderer.drawCircle(asPosition.x, asPosition.y, 10, Color.blue)
         })
 
         this.state.renderer.render()
