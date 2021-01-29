@@ -136,13 +136,20 @@ export class PixiRenderer {
         this.graphicsPool.clear()
     }
 
-    public drawTexture(x: number, y: number, texName: string, tint: number = 0xFFFFFF): void {
+    public drawTexture(x: number, y: number, texName: string, width: number = 0, height: number = 0,
+        tint: number = 0xFFFFFF): void {
         const tex = PIXI.utils.TextureCache[this.assetPathPrefix + texName]
 
         const sprite = this.spritePool.get()
         sprite.texture = tex
         sprite.x = x
         sprite.y = y
+        if (width !== 0) {
+            sprite.width = width
+        }
+        if (height !== 0) {
+            sprite.height = height
+        }
         sprite.tint = tint
     }
 
@@ -202,5 +209,10 @@ export class PixiRenderer {
         const x = ((uiPoint.x - rect.left) * this.width) / rect.width
         const y = ((uiPoint.y - rect.top) * this.height) / rect.height
         return { x, y }
+    }
+
+    public setCameraOffset(offset: {x: number, y: number }) {
+        // this.stage.setTransform(offset.x, offset.y, 0, 0, 0, 0, 0, 0, 0)
+        // this.stage.containerUpdateTransform()
     }
 }
