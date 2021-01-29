@@ -161,6 +161,5 @@ export function getRandomCoordinate(magnitude: number): Coordinate {
         console.error("getRandomCoordinate generated invalid coordinate")
     }
 
-    console.log(''+rx + ' ' + ry + ' ' + rz)
     return new Coordinate({ x: rx, y: ry, z: rz })
 }

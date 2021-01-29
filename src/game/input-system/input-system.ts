@@ -18,16 +18,21 @@ class InputSystem extends System {
     }
 
     handleMouseClick = (evt: any) => {
-        const pixiRenderer = (this.world.getSystem(RenderSystem) as RenderSystem).getRenderer()
+        const renderer = this.world.getSystem(RenderSystem) as RenderSystem
+        const pixiRenderer = renderer.getRenderer()
         const mouse = pixiRenderer.getMouseUiPosition()
         const gameMouse = pixiRenderer.convertToGameCoordinates(mouse)
 
-        const coordinate = XYToCoordinate(gameMouse.x, gameMouse.y)
+        const coordinate = XYToCoordinate(gameMouse.x - renderer.cameraX, gameMouse.y - renderer.cameraY)
         const coordinateSystem = this.world.getSystem(CoordinateSystem)
         const entity = coordinateSystem.getUnitAt(coordinate)!
 
-        if (entity && !entity.getComponent(Selected)) {
-            entity.addComponent(Selected)
+        if (entity) {
+            if(!entity.getComponent(Selected)) {
+                entity.addComponent(Selected)
+            } else {
+                entity.removeComponent(Selected)
+            }
         }
     }
 
