@@ -3,6 +3,7 @@ import { Camera, Position } from './components'
 import { getRandomCoordinate, initializeCoordinates } from '../game/coordinate-system/omnipotent-coordinates'
 import { Coordinate } from './coordinate-system/coordinate'
 import { Unit } from './units/unit'
+import { Alignment, AlignmentType } from './units/alignment'
 
 const UnitSpawnRadius = 4
 
@@ -13,6 +14,7 @@ export function initializeEntities(world: World) {
         const randomUnit = world.createEntity()
         randomUnit.addComponent(Coordinate, getRandomCoordinate(UnitSpawnRadius))
         randomUnit.addComponent(Unit)
+        randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
     }
 
     const cameraEntity = world.createEntity("camera")
