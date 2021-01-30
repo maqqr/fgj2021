@@ -51,7 +51,10 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             "Selection.png",
             "error.png",
             "wolf.png",
-            "worker.png"
+            "worker.png",
+            "soldier.png",
+            "bear.png",
+            "base.png"
         ])
 
 
@@ -139,25 +142,6 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                 tileSprite, tileHeight, tileHeight)
         })
 
-        this.queries.units.results.forEach(entity => {
-            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
-            const alignment = entity.getComponent(Alignment)
-            let sprite
-            switch (alignment?.value) {
-                case AlignmentType.Player:
-                    sprite = "worker.png"
-                    break
-                case AlignmentType.WildernessBeast:
-                    sprite = "wolf.png"
-                    break
-                default:
-                    sprite = "error.png"
-                    break
-            }
-            this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
-                sprite, tileHeight, tileHeight)
-        })
-
         this.queries.resources.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -178,8 +162,27 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
+        this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
                 tileSprite, TileWidth, TileWidth)
+        })
+
+        this.queries.units.results.forEach(entity => {
+            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            const alignment = entity.getComponent(Alignment)
+            let sprite
+            switch (alignment?.value) {
+                case AlignmentType.Player:
+                    sprite = "worker.png"
+                    break
+                case AlignmentType.WildernessBeast:
+                    sprite = "wolf.png"
+                    break
+                default:
+                    sprite = "error.png"
+                    break
+            }
+            this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
+                sprite, tileHeight, tileHeight)
         })
 
         this.queries.selection.results.forEach(entity => {

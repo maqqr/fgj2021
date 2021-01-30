@@ -9,6 +9,12 @@ import { RenderSystem } from './render-system'
 import { Game } from '../constants'
 import { TurnEntityName } from '../turns/turn-system'
 import { TurnEndOrder } from '../turns/turn-count'
+import { Coordinate } from '../coordinate-system/coordinate'
+import { CoordinateSystem } from '../coordinate-system/coordinate-system'
+import { TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
+import { Movement } from '../units/movement'
+import { Unit } from '../units/unit'
+import { Resource, resourceTypeToString } from '../tiles/resource'
 
 @registerWithPriority(4)
 class GUITestSystem extends System {
@@ -29,6 +35,70 @@ class GUITestSystem extends System {
         const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
         if (turnEntity && !turnEntity.getComponent(TurnEndOrder))
             turnEntity.addComponent(TurnEndOrder)
+    }
+
+    makeInfoWindow() {
+        const renderSystem = this.world.getSystem(RenderSystem)
+        const pixiRenderer = renderSystem.getRenderer()
+        const viewportRect = pixiRenderer.getViewportRect()
+
+        // Lots of copypaste sin here.
+        const mouse = pixiRenderer.convertToGameCoordinates(pixiRenderer.getMouseUiPosition())
+        const camera = renderSystem.getCamera()
+        const mouseHex = XYToCoordinate(mouse.x - camera.x, mouse.y - camera.y, TileWidth)
+
+        const infoWindowUiPos = pixiRenderer.convertToUICoordinates({x: 10, y: 10 })
+        let infoWindowStyle
+        if (mouse.x < Game.width * 0.4) {
+            infoWindowStyle = `right:${infoWindowUiPos.x}px; top:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+        }
+        else {
+            infoWindowStyle = `left:${infoWindowUiPos.x}px; top:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+        }
+
+
+        const allInfos: any = []
+
+        const unitEntity = this.world.getSystem(CoordinateSystem).getUnitAt(mouseHex)
+        if (unitEntity) {
+            const unit = unitEntity.getComponent(Unit)!
+            const movement = unitEntity.getComponent(Movement)!
+            allInfos.push(
+                <div>
+                    <h1>Worker</h1>
+                    <p>Strength: {""+unit.strength}</p>
+                    <p>Movement: {""+movement.movementPoints} / {""+movement.movementPointsMaximum}</p>
+                </div>
+            )
+            allInfos.push(<hr></hr>)
+        }
+
+        const tileEntity = this.world.getSystem(CoordinateSystem).getTileAt(mouseHex)
+        if (tileEntity) {
+            const resource = tileEntity.getComponent(Resource)
+            if (resource) {
+                allInfos.push(
+                    <div>
+                        <h1>Resource: {resourceTypeToString(resource.resource)}</h1>
+                    </div>
+                )
+                allInfos.push(<hr></hr>)
+            }
+        }
+
+        if (allInfos.length > 0) {
+            // Splice the last <hr> out
+            allInfos.splice(allInfos.length - 1, 1)
+
+            return (
+                <div class="rpgui-container framed" style={infoWindowStyle as any}>
+                    {allInfos}
+                </div>
+            )
+        }
+        else {
+            return <div class="rpgui-container" style={"display: none;" as any}></div>
+        }
     }
 
     execute(deltaTime: number, time: number) {
@@ -102,8 +172,11 @@ class GUITestSystem extends System {
                 }
             </div>
 
+        const infoWindow = this.makeInfoWindow()
+
+        const endTurnStyle = `z-index:-10; position:fixed; right:15px; bottom:15px;`
         const endTurnButton =
-            <div class="rpgui-container framed end-turn framed-grey" onclick={
+            <div class="rpgui-container framed framed-grey" style={endTurnStyle as any} onclick={
                 (evt: MouseEvent) => this.onEndTurnClicked(evt)}>
                 <span>
                     End turn
@@ -114,6 +187,7 @@ class GUITestSystem extends System {
             <div>
                 {/* {uiWindow} */}
                 {/* {positionTextsOnTopOnEntities} */}
+                {infoWindow}
                 {endTurnButton}
             </div>
 

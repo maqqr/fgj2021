@@ -5,13 +5,14 @@ import { CoordinateSystem } from "../coordinate-system/coordinate-system"
 import { getDistance, getNeighbourCoordinates } from "../coordinate-system/omnipotent-coordinates"
 import { Revealed } from "../tiles/revealed"
 import { Tile, TileType } from "../tiles/tile"
+import { Alignment, AlignmentType } from "../units/alignment"
 import { Unit } from "../units/unit"
 
 @registerWithPriority(80)
 export class FogOfWarSystem extends System {
 
     static queries = {
-        units: { components: [Coordinate, Unit] },
+        units: { components: [Coordinate, Unit, Alignment] },
     }
 
     private revealTile(coord: Coordinate) {
@@ -24,6 +25,9 @@ export class FogOfWarSystem extends System {
 
     execute(deltaTime: number, time: number) {
         this.queries.units.results.forEach(entity => {
+            if (entity.getComponent(Alignment)!.value !== AlignmentType.Player)
+                return
+
             const unitCoord = entity.getComponent(Coordinate)!
             const unit = entity.getComponent(Unit)!
             const viewRadius = 2

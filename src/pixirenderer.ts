@@ -97,7 +97,7 @@ export class PixiRenderer {
 
         const app = document.getElementById("app")!
         app.appendChild(this.pixirenderer.view)
-        this.pixirenderer.backgroundColor = 0x140c1c
+        this.pixirenderer.backgroundColor = 0x000000
     }
 
     public getCanvas(): HTMLCanvasElement {
