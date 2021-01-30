@@ -12,7 +12,7 @@ export class CoordinateDirectionVector {
         y: { type: Number, default: 0 },
         z: { type: Number, default: 0 }
     }
-    // this might be very-sin, The Emperor might purge me of this heresy, for he is is all-powerful
+    // this might be very-sin, The Emperor might purge me of this heresy, for he is is omnipotent and passes space and time
     constructor(x : number,y: number,z: number){
         this.x = x
         this.y = y
