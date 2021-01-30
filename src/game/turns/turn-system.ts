@@ -4,9 +4,7 @@ import { TurnCount, TurnEndOrder, TurnStarted } from './turn-count'
 
 export const TurnEntityName = 'turnBuoy'
 
-// tslint:disable-next-line: one-variable-per-declaration
-
-export let turnEvents: any = {
+export let turnEvents = {
     components: [TurnCount, TurnEndOrder],
     listen: {
         added: true
