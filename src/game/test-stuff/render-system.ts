@@ -59,7 +59,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             "bear.png",
             "base.png",
             "worker_gray.png",
-            "soldier_gray.png"
+            "soldier_gray.png",
+            "hex_highlight.png"
         ])
 
 
@@ -207,8 +208,10 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
         this.queries.selection.results.forEach(entity => {
             const pos = coordinateToXY(entity.getComponent(Coordinate)!)
-            this.state.renderer.drawTexture(pos.x - TileWidth / 2, pos.y - TileWidth / 2,
-                "Selection.png", TileWidth * 1.1, TileWidth * 1.1)
+            // this.state.renderer.drawTexture(pos.x - TileWidth / 2, pos.y - TileWidth / 2,
+            //     "Selection.png", TileWidth * 1.1, TileWidth * 1.1)
+            this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
+                "hex_highlight.png", tileHeight, tileHeight)
             this.state.renderer.drawCircle(pos.x, pos.y, 10, Color.red)
         })
 
@@ -227,7 +230,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             this.drawPathing(selectedEntity, mouseHex)
         }
 
-        this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
+        this.state.renderer.drawTexture(circlePos.x - tileHeight / 2, circlePos.y - tileHeight / 2,
+            "hex_highlight.png", tileHeight, tileHeight)
     }
 
     execute(delta: number, time: number) {
