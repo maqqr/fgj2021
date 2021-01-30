@@ -7,7 +7,7 @@ import { Entity, Not } from 'ecsy'
 import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
-import { Tile, TileType } from '../tiles/tile'
+import { Tile, TileType, getTilePath } from '../tiles/tile'
 import { Unit } from '../units/unit'
 import { Resource, ResourceType } from '../tiles/resource'
 import { Selected } from '../input-system/selected'
@@ -128,21 +128,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
             const tile = entity.getComponent(Tile)!
-            let tileSprite
-            switch (tile.tileType) {
-                case TileType.Forest:
-                    tileSprite = "forest.png"
-                    break
-                case TileType.Snow:
-                    tileSprite = "tile.png"
-                    break
-                case TileType.Mountain:
-                    tileSprite = "mountain.png"
-                    break
-                default:
-                    tileSprite = "error.png"
-                    break
-            }
+            let tileSprite = getTilePath(tile)
 
             this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
                 tileSprite, tileHeight, tileHeight)
