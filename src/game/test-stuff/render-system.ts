@@ -150,18 +150,20 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         const passableCallback = coordSystem.isPassable.bind(coordSystem)
         const path = pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)
         let previous: Coordinate | undefined
-        for (const pathCoord of path) {
-            const screenPos = coordinateToXY(pathCoord)
-            this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+        if (path.length > 2){
+            for (const pathCoord of path) {
+                const screenPos = coordinateToXY(pathCoord)
+                this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
 
-            if (previous) {
-                for (let f = 0.0; f < 1.0; f += 0.2) {
-                    const previousScreenPos = coordinateToXY(previous)
-                    const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
-                    this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
+                if (previous) {
+                    for (let f = 0.0; f < 1.0; f += 0.2) {
+                        const previousScreenPos = coordinateToXY(previous)
+                        const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
+                        this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
+                    }
                 }
+                previous = pathCoord
             }
-            previous = pathCoord
         }
         this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
     }
