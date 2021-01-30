@@ -16,6 +16,7 @@ import { Movement } from '../units/movement'
 import { Unit } from '../units/unit'
 import { Resource, resourceTypeToString } from '../tiles/resource'
 import { Building } from '../tiles/building'
+import { Carriage } from '../units/carriage'
 
 @registerWithPriority(4)
 class GUITestSystem extends System {
@@ -64,12 +65,16 @@ class GUITestSystem extends System {
         if (unitEntity) {
             const unit = unitEntity.getComponent(Unit)!
             const movement = unitEntity.getComponent(Movement)!
+            const resource = unitEntity.getComponent(Carriage)
             allInfos.push(
                 <div>
                     <h1>{unit.name}</h1>
                     <p>Health: {""+Math.floor(unit.health)} / {""+Math.floor(unit.maxHealth)}</p>
                     <p>Strength: {""+unit.strength}</p>
                     <p>Movement: {""+movement.movementPoints} / {""+movement.movementPointsMaximum}</p>
+                    { resource && resource.value ?
+                        <p>Carrying: {""+resourceTypeToString(resource.value)}</p> :
+                        <div></div> }
                 </div>
             )
             allInfos.push(<hr></hr>)
