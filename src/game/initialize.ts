@@ -5,6 +5,7 @@ import { Coordinate } from './coordinate-system/coordinate'
 import { Unit } from './units/unit'
 import { Alignment, AlignmentType } from './units/alignment'
 import { Movement } from './units/movement'
+import { Building } from './tiles/building'
 
 const UnitSpawnRadius = 4
 

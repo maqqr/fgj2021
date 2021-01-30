@@ -2,6 +2,7 @@ import { Coordinate } from "./coordinate"
 import { World } from 'ecsy'
 import { Tile, TileType } from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
+import { Building } from "../tiles/building"
 
 export const TileWidth = 50
 export const Radius = 50
@@ -126,8 +127,14 @@ export function initializeCoordinates(world: World) {
                 {
                     continue
                 }
+
                 const coordinateEntity = world.createEntity()
                 coordinateEntity.addComponent(Coordinate, { x, y, z })
+
+                // Create base at origin
+                if (x === 0 && y === 0 && z === 0) {
+                    coordinateEntity.addComponent(Building)
+                }
 
                 // Perhaps in own code later
                 const selectedType = selectTileType(totalTypeWeight, typeWeights)

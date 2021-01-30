@@ -17,6 +17,7 @@ import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { TurnEntityName } from '../turns/turn-system'
 import { Revealed } from '../tiles/revealed'
 import { TurnStarted } from '../turns/turn-count'
+import { Building } from '../tiles/building'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -24,6 +25,7 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile, Revealed] },
+        buildings: { components: [Coordinate, Building, Revealed] },
         resources: { components: [Coordinate, Resource, Revealed] },
         units: { components: [Coordinate, Unit] },
         selection: { components: [Coordinate, Selected] }
@@ -139,6 +141,13 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
             this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
                 tileSprite, tileHeight, tileHeight)
+        })
+
+        this.queries.buildings.results.forEach(entity => {
+            const coordinate = entity.getComponent(Coordinate, false)!
+            const asPosition = coordinateToXY(coordinate)
+            this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
+                "base.png", tileHeight, tileHeight)
         })
 
         this.queries.resources.results.forEach(entity => {
