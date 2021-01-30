@@ -8,6 +8,7 @@ import { Unit } from '../units/unit'
 import { Selected } from './selected'
 import { PersistentSystem } from '../../persistent-system'
 import { Movement } from '../units/movement'
+import { pathfind } from '../pathfinding'
 
 @registerWithPriority(92)
 export class InputSystem extends PersistentSystem<{}> {
@@ -104,10 +105,24 @@ export class InputSystem extends PersistentSystem<{}> {
             if (!movement || movement.movementPoints === 0) {
                 return
             }
-            unitCoordinate.x = coordinate.x
-            unitCoordinate.y = coordinate.y
-            unitCoordinate.z = coordinate.z
-            movement.movementPoints--
+            const coordSystem = this.world.getSystem(CoordinateSystem)
+            const passableCallback = coordSystem.isPassable.bind(coordSystem)
+
+            let path = pathfind(unitCoordinate, coordinate, passableCallback)
+            if (!path || path.length === 0){
+                return
+            }
+            path.splice(0, 1)
+
+            let step = 0
+            while (movement.movementPoints > 0 && step < path.length) {
+                const stepFromPath = path[step]
+                unitCoordinate.x = stepFromPath.x
+                unitCoordinate.y = stepFromPath.y
+                unitCoordinate.z = stepFromPath.z
+                movement.movementPoints--
+                step++
+            }
 
             this.unselectEntity(entity)
         }
