@@ -4,7 +4,7 @@ import { Tile, TileType } from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
 
 export const TileWidth = 50
-export const Radius = 5
+export const Radius = 50
 
 const typeWeights = [
     { type: TileType.Forest, weight: 50 },

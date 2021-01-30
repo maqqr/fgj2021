@@ -47,6 +47,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.state = { renderer }
     }
 
+    //TODO: miten se menikään se type
+    moveCamera(direction: any, speed: number) {
+        this.cameraX += direction.x * speed
+        this.cameraY += direction.y * speed
+    }
+
     getRenderer(): PixiRenderer {
         return this.state.renderer
     }
