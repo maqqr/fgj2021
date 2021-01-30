@@ -15,7 +15,7 @@ export function initializeEntities(world: World) {
     for (let i = 0; i < 5; i++) {
         const randomUnit = world.createEntity()
         randomUnit.addComponent(Coordinate, getRandomCoordinate(UnitSpawnRadius))
-        randomUnit.addComponent(Unit, { strength: 12, health: 70 })
+        randomUnit.addComponent(Unit, { strength: 12, health: 70, maxHealth: 70 })
         randomUnit.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
     }
@@ -23,7 +23,7 @@ export function initializeEntities(world: World) {
     for (let i = 0; i < 1000; i++) {
         const randomUnit = world.createEntity()
         randomUnit.addComponent(Coordinate, getRandomCoordinate(Radius))
-        randomUnit.addComponent(Unit, { strength: 12, health: 40 })
+        randomUnit.addComponent(Unit, { strength: 12, health: 40, maxHealth: 40 })
         randomUnit.addComponent(Movement, { movementPoints: 0, movementPointsMaximum: 0 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.WildernessBeast })
     }
