@@ -1,6 +1,6 @@
 import { Coordinate } from "./coordinate"
 import { World } from 'ecsy'
-import { Tile, TileType } from "../tiles/tile"
+import { Tile, TileType, tileTypeVariationAmount} from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
 
 export const TileWidth = 50
@@ -131,7 +131,8 @@ export function initializeCoordinates(world: World) {
 
                 // Perhaps in own code later
                 const selectedType = selectTileType(totalTypeWeight, typeWeights)
-                coordinateEntity.addComponent(Tile, { tileType: selectedType })
+                const variation = randomInt(0, tileTypeVariationAmount(selectedType) - 1)
+                coordinateEntity.addComponent(Tile, { tileType: selectedType, tileVariation: variation })
 
                 const typeArray = resourceWeights.find(rw => rw.tileType === selectedType)!
                 const totalResourceWeight = typeArray.typedWeights
