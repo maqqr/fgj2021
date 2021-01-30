@@ -13,6 +13,8 @@ import { Resource, ResourceType } from '../tiles/resource'
 import { Selected } from '../input-system/selected'
 import { pathfind } from '../pathfinding'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
+import { TurnEntityName } from '../turns/turn-system'
+import { TurnStarted } from '../turns/turn-count'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -22,7 +24,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         coordinates: { components: [Coordinate, Tile] },
         resources: { components: [Coordinate, Resource] },
         units: { components: [Coordinate, Unit] },
-        selection: { components: [Coordinate, Selected] },
+        selection: { components: [Coordinate, Selected] }
     }
 
     initializeState() {
@@ -75,6 +77,11 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
         this.state.renderer.clear()
         this.state.renderer.setCameraOffset(camera)
+
+        const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
+        if (turnEntity?.getComponent(TurnStarted)){
+            return
+        }
 
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!

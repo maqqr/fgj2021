@@ -7,8 +7,10 @@ import { Position, Velocity } from '../components'
 import { Player } from './example-components'
 import { RenderSystem } from './render-system'
 import { Game } from '../constants'
+import { TurnEntityName } from '../turns/turn-system'
+import { TurnEndOrder } from '../turns/turn-count'
 
-// @registerWithPriority(4)
+@registerWithPriority(4)
 class GUITestSystem extends System {
     static queries = {
         players: { components: [Player, Position] },
@@ -21,6 +23,12 @@ class GUITestSystem extends System {
         newEntity.addComponent(Position, { x: Game.width / 2, y: Game.height / 2 })
         newEntity.addComponent(Velocity, { x: rnd() * 60, y: rnd() * 60 })
         newEntity.addComponent(Player)
+    }
+
+    onEndTurnClicked(evt: MouseEvent) {
+        const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
+        if (turnEntity && !turnEntity.getComponent(TurnEndOrder))
+            turnEntity.addComponent(TurnEndOrder)
     }
 
     execute(deltaTime: number, time: number) {
@@ -94,10 +102,19 @@ class GUITestSystem extends System {
                 }
             </div>
 
+        const endTurnButton =
+            <div class="rpgui-container framed end-turn framed-grey" onclick={
+                (evt: MouseEvent) => this.onEndTurnClicked(evt)}>
+                <span>
+                    End turn
+                </span>
+            </div>
+
         const finalUi =
             <div>
-                {uiWindow}
-                {positionTextsOnTopOnEntities}
+                {/* {uiWindow} */}
+                {/* {positionTextsOnTopOnEntities} */}
+                {endTurnButton}
             </div>
 
         const uiContainer = document.getElementById("ui")
