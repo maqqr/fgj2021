@@ -8,6 +8,7 @@ import './test-stuff/render-system'
 import './test-stuff/ui-system'
 import './coordinate-system/coordinate-system'
 import './fog-of-war/fow-system'
+import { DamageTaken } from './units/damage-taken'
 
 export function registerSystems(world: World): void {
     // Register all @registerWithPriority systems
@@ -20,28 +21,22 @@ export function registerSystems(world: World): void {
 @registerWithPriority(2)
 class MovementSystem extends System {
     static queries = {
-        entities: { components: [Position, Velocity] }
+        entities: { components: [Position, Velocity, DamageTaken] }
     }
 
     execute(deltaTime: number, time: number) {
         this.queries.entities.results.forEach(entity => {
-            const velocity = entity.getComponent(Velocity)!
+            const velocity = entity.getMutableComponent(Velocity)!
             const position = entity.getMutableComponent(Position)!
+
+            velocity.x += -velocity.x * deltaTime
+            velocity.y += -velocity.y * deltaTime
 
             position.x += velocity.x * deltaTime
             position.y += velocity.y * deltaTime
 
-            if (position.x < 0 && velocity.x < 0) {
-                position.x = Game.width
-            }
-            if (position.x > Game.width && velocity.x > 0) {
-                position.x = 0
-            }
-            if (position.y < 0 && velocity.y < 0) {
-                position.y = Game.height
-            }
-            if (position.y > Game.height && velocity.y > 0) {
-                position.y = 0
+            if (Math.abs(velocity.x) < 0.3 && Math.abs(velocity.y) < 0.3) {
+                entity.remove()
             }
         })
     }

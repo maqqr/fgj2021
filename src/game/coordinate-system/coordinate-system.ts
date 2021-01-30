@@ -73,6 +73,15 @@ export class CoordinateSystem extends System {
         }
 
         const tile = tileEntity.getComponent(Tile)!
-        return tile.tileType !== TileType.Mountain
+        if (tile.tileType === TileType.Mountain) {
+            return false
+        }
+
+        const unit = this.getUnitAt(coord)
+        if (unit) {
+            return false
+        }
+
+        return true
     }
 }

@@ -3,7 +3,7 @@
 import { h, render } from 'petit-dom'
 import { System } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { Position, Velocity } from '../components'
+import { Camera, Position, Velocity } from '../components'
 import { Player } from './example-components'
 import { RenderSystem } from './render-system'
 import { Game } from '../constants'
@@ -16,12 +16,14 @@ import { Movement } from '../units/movement'
 import { Unit } from '../units/unit'
 import { Resource, resourceTypeToString } from '../tiles/resource'
 import { Building } from '../tiles/building'
+import { DamageTaken } from '../units/damage-taken'
 
 @registerWithPriority(4)
 class GUITestSystem extends System {
     static queries = {
         players: { components: [Player, Position] },
-        withPosition: { components: [Position] }
+        withPosition: { components: [Position] },
+        damage: { components: [DamageTaken, Position] }
     }
 
     onSpawnButtonClicked(evt: any) {
@@ -173,15 +175,18 @@ class GUITestSystem extends System {
                 </div>
             </div>
 
+        const camera = this.world.getSystem(RenderSystem).getCamera()
         const positionTextsOnTopOnEntities =
             <div>
                 {
-                this.queries.withPosition.results.map(entity => {
+                this.queries.damage.results.map(entity => {
                     const pos = entity.getComponent(Position)!
-                    const uiPosition = pixiRenderer.convertToUICoordinates(pos)
+                    const damage = entity.getComponent(DamageTaken)!
+                    const cameraFix = { x: pos.x + camera.x, y: pos.y + camera.y }
+                    const uiPosition = pixiRenderer.convertToUICoordinates(cameraFix)
                     const textStyle = `z-index:-10; position:fixed; left:${uiPosition.x}px; top:${uiPosition.y}px;`
-                                    + `transform: translate(-50%, -50%)`
-                    return <span style={textStyle as any}>{`(${Math.floor(pos.x)}, ${Math.floor(pos.y)})`}</span>
+                                    + `transform: translate(-50%, -50%); color: lightcoral`
+                    return <span style={textStyle as any}>{`-${Math.floor(damage.value)}`}</span>
                 })
                 }
             </div>
@@ -200,7 +205,7 @@ class GUITestSystem extends System {
         const finalUi =
             <div>
                 {/* {uiWindow} */}
-                {/* {positionTextsOnTopOnEntities} */}
+                {positionTextsOnTopOnEntities}
                 {infoWindow}
                 {endTurnButton}
             </div>
