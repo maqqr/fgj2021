@@ -79,4 +79,9 @@ if (module.hot) {
         console.log("Accepting updated components");
         //reloadWorld(); disabled for now
     });
+
+    module.hot.accept('./game/initialize.ts', function() {
+        console.log("Accepting updated initialize");
+        //reloadWorld(); disabled for now
+    });
 }

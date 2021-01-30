@@ -22,7 +22,7 @@ class InputSystem extends PersistentSystem<{}> {
     onKeyupListener: EventListener
 
     initialize() {
-        this.renderer = this.world.getSystem(RenderSystem) as RenderSystem
+        this.renderer = this.world.getSystem(RenderSystem)
         this.onClickListener = this.handleMouseClick.bind(this)
         this.onKeydownListener = this.handleKeyPress.bind(this)
         this.onKeyupListener = this.resetKeyPress.bind(this)
@@ -78,7 +78,8 @@ class InputSystem extends PersistentSystem<{}> {
         const mouse = pixiRenderer.getMouseUiPosition()
         const gameMouse = pixiRenderer.convertToGameCoordinates(mouse)
 
-        const coordinate = XYToCoordinate(gameMouse.x - this.renderer.cameraX, gameMouse.y - this.renderer.cameraY)
+        const camera = this.renderer.getCamera()
+        const coordinate = XYToCoordinate(gameMouse.x - camera.x, gameMouse.y - camera.y)
         const coordinateSystem = this.world.getSystem(CoordinateSystem)
         const entity = coordinateSystem.getUnitAt(coordinate)!
 

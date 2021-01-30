@@ -1,7 +1,7 @@
 import { PixiRenderer } from '../../pixirenderer'
 import { PersistentSystem } from '../../persistent-system'
 import { Color } from '../color'
-import { Position } from '../components'
+import { Camera, Position } from '../components'
 import { registerWithPriority } from '../../register-system'
 import { Not } from 'ecsy'
 import { Game } from '../constants'
@@ -24,8 +24,6 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         units: { components: [Coordinate, Unit] },
         selection: { components: [Coordinate, Selected] },
     }
-    cameraX = 300
-    cameraY = 300
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
@@ -50,8 +48,18 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
     }
 
     moveCamera(direction: { x: number, y: number }, speed: number) {
-        this.cameraX += direction.x * speed
-        this.cameraY += direction.y * speed
+        const cameraEntity = this.world.entityManager.getEntityByName("camera")
+        const camera = cameraEntity?.getMutableComponent(Position)
+        if (camera) {
+            camera.x += direction.x * speed
+            camera.y += direction.y * speed
+        } else {
+            console.log("Camera not found")
+        }
+    }
+
+    getCamera(): { x: number, y: number } {
+        return this.world.entityManager.getEntityByName("camera")?.getComponent(Position) ?? { x: 0, y: 0 }
     }
 
     getRenderer(): PixiRenderer {
@@ -63,10 +71,10 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             return
         }
 
-
+        const camera = this.getCamera()
 
         this.state.renderer.clear()
-        this.state.renderer.setCameraOffset({x: this.cameraX, y: this.cameraY})
+        this.state.renderer.setCameraOffset(camera)
 
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
@@ -129,7 +137,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         })
 
         const mouse = this.state.renderer.convertToGameCoordinates(this.state.renderer.getMouseUiPosition())
-        const mouseHex = XYToCoordinate(mouse.x - this.cameraX, mouse.y - this.cameraY, TileWidth)
+        const mouseHex = XYToCoordinate(mouse.x - camera.x, mouse.y - camera.y, TileWidth)
         const circlePos = coordinateToXY(mouseHex)
 
         // Draw path from origin to the hex under mouse

@@ -40,3 +40,6 @@ export class Velocity extends Component<Velocity> {
         y: { type: Types.Number, default: 0 },
     }
 }
+
+@registerComponent
+export class Camera extends TagComponent {}
