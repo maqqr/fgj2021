@@ -15,6 +15,7 @@ import { TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coord
 import { Movement } from '../units/movement'
 import { Unit } from '../units/unit'
 import { Resource, resourceTypeToString } from '../tiles/resource'
+import { Building } from '../tiles/building'
 
 @registerWithPriority(4)
 class GUITestSystem extends System {
@@ -50,15 +51,15 @@ class GUITestSystem extends System {
         const infoWindowUiPos = pixiRenderer.convertToUICoordinates({x: 10, y: 10 })
         let infoWindowStyle
         if (mouse.x < Game.width * 0.4) {
-            infoWindowStyle = `right:${infoWindowUiPos.x}px; top:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+            infoWindowStyle = `right:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
         }
         else {
-            infoWindowStyle = `left:${infoWindowUiPos.x}px; top:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+            infoWindowStyle = `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
         }
-
 
         const allInfos: any = []
 
+        // Get info from unit
         const unitEntity = this.world.getSystem(CoordinateSystem).getUnitAt(mouseHex)
         if (unitEntity) {
             const unit = unitEntity.getComponent(Unit)!
@@ -66,6 +67,7 @@ class GUITestSystem extends System {
             allInfos.push(
                 <div>
                     <h1>Worker</h1>
+                    <p>Health: {""+Math.floor(unit.health)} / {""+Math.floor(unit.maxHealth)}</p>
                     <p>Strength: {""+unit.strength}</p>
                     <p>Movement: {""+movement.movementPoints} / {""+movement.movementPointsMaximum}</p>
                 </div>
@@ -73,6 +75,7 @@ class GUITestSystem extends System {
             allInfos.push(<hr></hr>)
         }
 
+        // Get infos from tile
         const tileEntity = this.world.getSystem(CoordinateSystem).getTileAt(mouseHex)
         if (tileEntity) {
             const resource = tileEntity.getComponent(Resource)
@@ -80,6 +83,17 @@ class GUITestSystem extends System {
                 allInfos.push(
                     <div>
                         <h1>Resource: {resourceTypeToString(resource.resource)}</h1>
+                    </div>
+                )
+                allInfos.push(<hr></hr>)
+            }
+
+            const building = tileEntity.getComponent(Building)
+            if (building) {
+                allInfos.push(
+                    <div>
+                        <h1>Building</h1>
+                        <p>Resources: {""+building.containedResources}</p>
                     </div>
                 )
                 allInfos.push(<hr></hr>)

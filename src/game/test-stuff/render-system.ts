@@ -17,6 +17,9 @@ import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { TurnEntityName } from '../turns/turn-system'
 import { Revealed } from '../tiles/revealed'
 import { TurnStarted } from '../turns/turn-count'
+import { Building } from '../tiles/building'
+import { Alignment, AlignmentType } from '../units/alignment'
+import { Movement } from '../units/movement'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -24,8 +27,9 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile, Revealed] },
+        buildings: { components: [Coordinate, Building, Revealed] },
         resources: { components: [Coordinate, Resource, Revealed] },
-        units: { components: [Coordinate, Unit] },
+        units: { components: [Coordinate, Unit, Alignment] },
         selection: { components: [Coordinate, Selected] }
     }
 
@@ -52,7 +56,10 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             "wolf.png",
             "worker.png",
             "soldier.png",
-            "bear.png"
+            "bear.png",
+            "base.png",
+            "worker_gray.png",
+            "soldier_gray.png"
         ])
 
 
@@ -126,6 +133,13 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                 tileSprite, tileHeight, tileHeight)
         })
 
+        this.queries.buildings.results.forEach(entity => {
+            const coordinate = entity.getComponent(Coordinate, false)!
+            const asPosition = coordinateToXY(coordinate)
+            this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
+                "base.png", tileHeight, tileHeight)
+        })
+
         this.queries.resources.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -146,14 +160,35 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
+        this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
                 tileSprite, TileWidth, TileWidth)
         })
 
         this.queries.units.results.forEach(entity => {
             const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            const unit = entity.getComponent(Unit)!
+            const alignment = entity.getComponent(Alignment)
+            let sprite
+            switch (alignment?.value) {
+                case AlignmentType.Player:
+                    const movement = entity.getComponent(Movement)
+                    const gray = movement && movement.movementPoints === 0 ? "_gray" : ""
+                    if (unit.canBuild) {
+                        sprite = `worker${gray}.png`
+                    }
+                    else {
+                        sprite = `soldier${gray}.png`
+                    }
+                    break
+                case AlignmentType.WildernessBeast:
+                    sprite = "wolf.png"
+                    break
+                default:
+                    sprite = "error.png"
+                    break
+            }
             this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
-                "worker.png", tileHeight, tileHeight)
+                sprite, tileHeight, tileHeight)
         })
 
         this.queries.selection.results.forEach(entity => {
