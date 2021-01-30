@@ -150,7 +150,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         const passableCallback = coordSystem.isPassable.bind(coordSystem)
         const path = pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)
         let previous: Coordinate | undefined
-        if (path.length > 2){
+        if (path.length > 1 && coordSystem.isPassable(path[path.length - 1])){
             for (const pathCoord of path) {
                 const screenPos = coordinateToXY(pathCoord)
                 this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
