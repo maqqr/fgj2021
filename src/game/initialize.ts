@@ -21,7 +21,8 @@ export function initializeEntities(world: World) {
     for (let i = 0; i < 5; i++) {
         const randomUnit = world.createEntity()
         const coord = getRandomCoordinate(UnitSpawnRadius)
-        randomUnit.addComponent(Unit, { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()} - Worker` })
+        randomUnit.addComponent(Coordinate, coord)
+        randomUnit.addComponent(Unit, { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()}` })
         randomUnit.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
         randomUnit.addComponent(AnimatedPosition, coordinateToXY(coord))
