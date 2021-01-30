@@ -39,6 +39,16 @@ export class Position extends Component<Position> {
 }
 
 @registerComponent
+export class AnimatedPosition extends Component<AnimatedPosition> {
+    x: number
+    y: number
+    static schema = {
+        x: { type: Types.Number, default: 0 },
+        y: { type: Types.Number, default: 0 },
+    }
+}
+
+@registerComponent
 export class Velocity extends Component<Velocity> {
     x: number
     y: number

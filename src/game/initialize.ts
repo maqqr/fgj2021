@@ -1,5 +1,5 @@
 import { World } from 'ecsy'
-import { Camera, Position } from './components'
+import { AnimatedPosition, Camera, Position } from './components'
 import { getRandomCoordinate, initializeCoordinates, Radius } from '../game/coordinate-system/omnipotent-coordinates'
 import { Coordinate } from './coordinate-system/coordinate'
 import { Unit } from './units/unit'
@@ -23,6 +23,7 @@ export function initializeEntities(world: World) {
         randomUnit.addComponent(Unit, { strength: 12, health: 70, maxHealth: 70, name: getRandomName() })
         randomUnit.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
+        randomUnit.addComponent(AnimatedPosition)
     }
 
     for (let i = 0; i < 1000; i++) {
@@ -31,6 +32,7 @@ export function initializeEntities(world: World) {
         randomUnit.addComponent(Unit, { strength: 12, health: 40, maxHealth: 40, name: "Wolf" })
         randomUnit.addComponent(Movement, { movementPoints: 0, movementPointsMaximum: 0 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.WildernessBeast })
+        randomUnit.addComponent(AnimatedPosition)
     }
 
     const cameraEntity = world.createEntity("camera")

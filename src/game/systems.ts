@@ -4,6 +4,7 @@ import { getPrioritySystems, registerWithPriority } from '../register-system'
 import { Game } from './constants'
 
 // All systems in other files must be included here to be compiled
+import './units/unit-animation-system'
 import './test-stuff/render-system'
 import './test-stuff/ui-system'
 import './coordinate-system/coordinate-system'
