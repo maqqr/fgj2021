@@ -77,6 +77,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             camera.x += direction.x * speed
             camera.y += direction.y * speed
         } else {
+            // tslint:disable-next-line: no-console
             console.log("Camera not found")
         }
     }
@@ -97,7 +98,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
     }
 
     drawPathing(entity: Entity, mouseHex: Coordinate) {
-        //Draw path from origin to the hex under mouse
+        // Draw path from origin to the hex under mouse
         const coordSystem = this.world.getSystem(CoordinateSystem)
         const passableCallback = coordSystem.isPassable.bind(coordSystem)
         const selectedOrigin = entity.getComponent(Coordinate)!
@@ -128,7 +129,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
             const tile = entity.getComponent(Tile)!
-            let tileSprite = getTilePath(tile)
+            const tileSprite = getTilePath(tile)
 
             this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
                 tileSprite, tileHeight, tileHeight)
@@ -166,7 +167,15 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         })
 
         this.queries.units.results.forEach(entity => {
-            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            const entityPos = entity.getComponent(Coordinate)!
+            const pos = coordinateToXY(entityPos)
+
+            // Units in unrevealed areas are not drawn
+            const revealed = this.world.getSystem(CoordinateSystem).getTileAt(entityPos)?.getComponent(Revealed)
+            if (!revealed) {
+                return
+            }
+
             const unit = entity.getComponent(Unit)!
             const alignment = entity.getComponent(Alignment)
             let sprite
