@@ -179,3 +179,7 @@ export function getRandomCoordinate(magnitude: number): Coordinate {
 
     return new Coordinate({ x: rx, y: ry, z: rz })
 }
+
+export function equalCoordinates(a : Coordinate, b : Coordinate) : boolean{
+    return a.x === b.x && a.y === b.y && a.z === b.z
+}

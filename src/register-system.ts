@@ -1,4 +1,5 @@
 import { System, SystemConstructor, Entity } from 'ecsy'
+import { Coordinate } from './game/coordinate-system/coordinate'
 
 export type SystemWithPriority = {
     priority: number,
