@@ -18,8 +18,8 @@ function breadthFirstPathfind(start: Coordinate, end: Coordinate, passableCallba
     
     // the loop starts with first coordinate by default
     while (frontier.length > 0) {
-        const newAnalysisCoordinate = frontier[frontier.length - 1]
-        frontier.splice(frontier.length - 1, 1)
+        const newAnalysisCoordinate = frontier[0]
+        frontier.splice(0, 1)
         if (equalCoordinates(newAnalysisCoordinate, end)){
             break
         }
@@ -44,6 +44,7 @@ function breadthFirstPathfind(start: Coordinate, end: Coordinate, passableCallba
         if (current === undefined)
             break
     }
+    path.push(start)
     return path.reverse()
 }
 

@@ -84,7 +84,7 @@ export class PixiRenderer {
 
         this.pixirenderer = PIXI.autoDetectRenderer(options)
         this.pixirenderer.view.id = "pixi-canvas"
-        PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+        PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR
         this.stage = new PIXI.Container()
         this.spriteStage = new PIXI.Container()
         this.graphicsStage = new PIXI.Container()

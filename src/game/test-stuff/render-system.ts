@@ -24,10 +24,12 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile] },
-        resources: { components: [Coordinate, Resource, Revealed] },
+        resources: { components: [Coordinate, Resource] },
         units: { components: [Coordinate, Unit] },
         selection: { components: [Coordinate, Selected] }
     }
+
+    private static magicSize: number = 1.12
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
@@ -85,22 +87,26 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
         const path = pathfind(selectedOrigin, mouseHex, passableCallback)
         let previous: Coordinate | undefined
-        for (const pathCoord of path) {
-            const screenPos = coordinateToXY(pathCoord)
-            this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+        if (path.length > 1 && coordSystem.isPassable(path[path.length - 1])){
+            for (const pathCoord of path) {
+                const screenPos = coordinateToXY(pathCoord)
+                this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
 
-            if (previous) {
-                for (let f = 0.0; f < 1.0; f += 0.2) {
-                    const previousScreenPos = coordinateToXY(previous)
-                    const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
-                    this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
+                if (previous) {
+                    for (let f = 0.0; f < 1.0; f += 0.2) {
+                        const previousScreenPos = coordinateToXY(previous)
+                        const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
+                        this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
+                    }
                 }
+                previous = pathCoord
             }
-            previous = pathCoord
         }
     }
 
     renderObjects(camera: any) {
+        const tileHeight = TileWidth * RenderSystem.magicSize
+
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -121,8 +127,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
-                tileSprite, TileWidth, TileWidth)
+            this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
+                tileSprite, tileHeight, tileHeight)
         })
 
         this.queries.units.results.forEach(entity => {
@@ -170,6 +176,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         }
 
         const selectedEntity = this.world.getSystem(InputSystem).selectedEntity
+
 
         if (selectedEntity) {
             this.drawPathing(selectedEntity, mouseHex)
