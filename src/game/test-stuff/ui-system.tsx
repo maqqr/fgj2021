@@ -68,7 +68,7 @@ class GUITestSystem extends System {
             const movement = unitEntity.getComponent(Movement)!
             allInfos.push(
                 <div>
-                    <h1>Worker</h1>
+                    <h1>{unit.name}</h1>
                     <p>Health: {""+Math.floor(unit.health)} / {""+Math.floor(unit.maxHealth)}</p>
                     <p>Strength: {""+unit.strength}</p>
                     <p>Movement: {""+movement.movementPoints} / {""+movement.movementPointsMaximum}</p>
