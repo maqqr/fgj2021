@@ -166,7 +166,15 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         })
 
         this.queries.units.results.forEach(entity => {
-            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            const entityPos = entity.getComponent(Coordinate)!
+            const pos = coordinateToXY(entityPos)
+
+            // Units in unrevealed areas are not drawn
+            const revealed = this.world.getSystem(CoordinateSystem).getTileAt(entityPos)?.getComponent(Revealed)
+            if (!revealed) {
+                return
+            }
+
             const unit = entity.getComponent(Unit)!
             const alignment = entity.getComponent(Alignment)
             let sprite
