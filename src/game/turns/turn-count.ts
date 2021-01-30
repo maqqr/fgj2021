@@ -18,3 +18,7 @@ export class TurnEndOrder extends TagComponent {
 @registerComponent
 export class TurnStarted extends TagComponent {
 }
+
+@registerComponent
+export class TurnEnded extends TagComponent {
+}

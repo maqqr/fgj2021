@@ -1,6 +1,6 @@
 import { System } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { TurnCount, TurnEndOrder, TurnStarted } from './turn-count'
+import { TurnCount, TurnEndOrder, TurnStarted, TurnEnded } from './turn-count'
 
 export let startingTurn: any = {
     components: [TurnCount, TurnStarted],
