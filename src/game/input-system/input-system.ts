@@ -149,6 +149,7 @@ export class InputSystem extends PersistentSystem<{}> {
                     const possibleTarget = coordinateSystem.getUnitAt(fightCoordinate)
                     if (possibleTarget && possibleTarget.getComponent(Alignment)?.value !== moverAlignment.value) {
                         this.fight(entity, possibleTarget)
+                        movement.movementPoints = 0
                         return true
                     }
                     return true
