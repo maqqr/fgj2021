@@ -1,4 +1,4 @@
-import { Not } from 'ecsy'
+import { Not, Entity } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
 import { RenderSystem } from '../test-stuff/render-system'
 import { XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
@@ -16,6 +16,7 @@ class InputSystem extends PersistentSystem<{}> {
     renderer: RenderSystem
     moveDirection: any = {x: 0, y: 0}
     cameraSpeed = 100
+    selectedEntity: Entity | null = null
 
     onClickListener: EventListener
     onKeydownListener: EventListener
@@ -73,7 +74,7 @@ class InputSystem extends PersistentSystem<{}> {
         }
     }
 
-    handleMouseClick = (evt: any) => {
+    handleMouseClick = (evt: MouseEvent) => {
         const pixiRenderer = this.renderer.getRenderer()
         const mouse = pixiRenderer.getMouseUiPosition()
         const gameMouse = pixiRenderer.convertToGameCoordinates(mouse)
@@ -81,15 +82,42 @@ class InputSystem extends PersistentSystem<{}> {
         const camera = this.renderer.getCamera()
         const coordinate = XYToCoordinate(gameMouse.x - camera.x, gameMouse.y - camera.y)
         const coordinateSystem = this.world.getSystem(CoordinateSystem)
+
+        if (this.selectedEntity) {
+            this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
+        }
+        else {
+            this.lookForEntity(coordinateSystem, coordinate)
+        }
+    }
+
+    private moveSelectedEntity(coordinateSystem: CoordinateSystem, coordinate: Coordinate, entity: Entity) {
+        const tileEntity = coordinateSystem.getTileAt(coordinate)
+        if (tileEntity) {
+            const unitCoordinate = entity.getMutableComponent(Coordinate)!
+            unitCoordinate.x = coordinate.x
+            unitCoordinate.y = coordinate.y
+            unitCoordinate.z = coordinate.z
+            this.unselectEntity(entity)
+        }
+    }
+
+    private lookForEntity(coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
         const entity = coordinateSystem.getUnitAt(coordinate)!
 
         if (entity) {
-            if(!entity.getComponent(Selected)) {
+            if (!entity.getComponent(Selected)) {
                 entity.addComponent(Selected)
+                this.selectedEntity = entity
             } else {
-                entity.removeComponent(Selected)
+                this.unselectEntity(entity)
             }
         }
+    }
+
+    private unselectEntity(entity: Entity) {
+        entity.removeComponent(Selected)
+        this.selectedEntity = null
     }
 
     execute(delta: number, time: number): void {
