@@ -15,7 +15,7 @@ export function initializeEntities(world: World) {
         const randomUnit = world.createEntity()
         randomUnit.addComponent(Coordinate, getRandomCoordinate(UnitSpawnRadius))
         randomUnit.addComponent(Unit)
-        randomUnit.addComponent(Movement, { movementPoints: 2, movementPointsMaximum: 2 })
+        randomUnit.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
     }
 
