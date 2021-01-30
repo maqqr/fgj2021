@@ -48,6 +48,18 @@ export const coordinateToXY = (coordinate: Coordinate, tileWidth: number = TileW
     return { x, y }
 }
 
+const neighbourOffsets: {x: number, y: number, z: number}[] = [
+    {x:+1, y:-1, z:0}, {x:+1, y:0, z:-1}, {x:0, y:+1, z:-1},
+    {x:-1, y:+1, z:0}, {x:-1, y:0, z:+1}, {x:0, y:-1, z:+1}]
+
+export function getNeighbourCoordinates(coord: Coordinate): Coordinate[] {
+    const neighbours: Coordinate[] = []
+    for (const {x, y, z} of neighbourOffsets) {
+        neighbours.push(new Coordinate({x: coord.x + x, y: coord.y + y, z: coord.z + z}))
+    }
+    return neighbours
+}
+
 function cubeToAxial(cube: {x: number, y: number, z: number}) {
     return { x: cube.x, y: cube.z }
 }
