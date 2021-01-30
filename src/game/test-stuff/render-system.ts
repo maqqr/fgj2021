@@ -140,12 +140,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         const mouseHex = XYToCoordinate(mouse.x - camera.x, mouse.y - camera.y, TileWidth)
         const circlePos = coordinateToXY(mouseHex)
 
-        // Draw path from origin to the hex under mouse
-        // const passableCallback = this.world.getSystem(CoordinateSystem).isPassable
-        // for (const pathCoord of pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)) {
-        //     const screenPos = coordinateToXY(pathCoord)
-        //     this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
-        // }
+        //Draw path from origin to the hex under mouse
+        const passableCallback = this.world.getSystem(CoordinateSystem).isPassable
+        for (const pathCoord of pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)) {
+            const screenPos = coordinateToXY(pathCoord)
+            this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+        }
         this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
 
         this.state.renderer.render()

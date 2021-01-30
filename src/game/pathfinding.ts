@@ -1,24 +1,7 @@
 import { Coordinate } from "./coordinate-system/coordinate"
-import { coordinateToXY, getDistance } from "./coordinate-system/omnipotent-coordinates" 
+import { coordinateToXY, equalCoordinates, getDistance, getNeighbourCoordinates } from "./coordinate-system/omnipotent-coordinates" 
 
-//TODO: please where do I put this help meeeeeee
-export class CoordinateDirectionVector {
-    x: number
-    y: number
-    z: number
 
-    static schema = {
-        x: { type: Number, default: 0 },
-        y: { type: Number, default: 0 },
-        z: { type: Number, default: 0 }
-    }
-    // this might be very-sin, The Emperor might purge me of this heresy, for he is is omnipotent and passes space and time
-    constructor(x : number,y: number,z: number){
-        this.x = x
-        this.y = y
-        this.z = z
-    }
-}
 
 export function pathfind(start: Coordinate, end: Coordinate, passableCallback: (pos: Coordinate) => Boolean): Coordinate[] {
     //return aStarPathfind(start, end, passableCallback)
@@ -26,16 +9,35 @@ export function pathfind(start: Coordinate, end: Coordinate, passableCallback: (
 }
 
 function breadthFirstPathfind(start: Coordinate, end: Coordinate, passableCallback: (pos: Coordinate) => Boolean): Coordinate[]{
-    const visited: Coordinate[] = []
-    const path: Coordinate[] = []
-    
     const frontier: Coordinate[] = [start]
+    const cameFrom : {[id: string] : Coordinate} = {}
+    
     // the loop starts with first coordinate by default
     while (frontier.length > 0) {
         const newAnalysisCoordinate = frontier[frontier.length - 1]
-        //const neighbors =
+        frontier.splice(frontier.length - 1, 1)
+        if (equalCoordinates(newAnalysisCoordinate, end)){
+            break
+        }
+        const coords : Coordinate[] = checkNeighbourCoordinates(newAnalysisCoordinate, passableCallback)
+        for (let index = 0; index < coords.length; index++) {
+            const next = coords[index]
+            const key : string = "" + next.x + "," + next.y + "," + next.z
+            if (!(key in cameFrom)){
+                frontier.push(next)
+                cameFrom[key] = newAnalysisCoordinate
+            }
+        }
     }
-    return [];
+
+    let current : Coordinate = end
+    const path: Coordinate[] = []
+    while (equalCoordinates(current, start)) {
+        path.push(current)
+        const key : string = "" + current.x + "," + current.y + "," + current.z
+        current = cameFrom[key]
+    }
+    return path.reverse()
 }
 
 function aStarPathfind(start: Coordinate, end: Coordinate, passableCallback: (pos: Coordinate) => Boolean): Coordinate[] {
@@ -71,21 +73,17 @@ function aStarPathfind(start: Coordinate, end: Coordinate, passableCallback: (po
     return []
 }
 
-function getNeighborCoordinates(origin: Coordinate, passableCallback: (pos: Coordinate) => Boolean) : Coordinate[]{
+function checkNeighbourCoordinates(origin: Coordinate, passableCallback: (pos: Coordinate) => Boolean) : Coordinate[]{
     const result : Coordinate[] = []
-    const dirSet : CoordinateDirectionVector[] = []
-    const leftUp : CoordinateDirectionVector = new CoordinateDirectionVector(0,0,0);
-    dirSet.push(leftUp)
 
-    for (let index = 0; index < 6; index++) {
-        if (tryGetNeighborCoordinate(origin, passableCallback)){
-            result.push()
+    const unfilteredNeighbors : Coordinate[] =  getNeighbourCoordinates(origin)
+
+    for (let index = 0; index < unfilteredNeighbors.length; index++) {
+        const element = unfilteredNeighbors[index]
+        if (passableCallback(element)){
+            result.push(element)
         }
     }
-    return result;
-}
 
-// this is way too deep function repetition and callback pass, but I try to memorize the syntax by doing it
-function tryGetNeighborCoordinate(origin: Coordinate, passableCallback: (pos: Coordinate) => Boolean): Boolean {
-    return passableCallback(origin)
+    return result;
 }
