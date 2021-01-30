@@ -9,6 +9,10 @@ export function pathfind(start: Coordinate, end: Coordinate, passableCallback: (
 }
 
 function breadthFirstPathfind(start: Coordinate, end: Coordinate, passableCallback: (pos: Coordinate) => Boolean): Coordinate[]{
+    if (start === undefined || end === undefined) {
+        console.error("pathfind start or end if undefined")
+    }
+
     const frontier: Coordinate[] = [start]
     const cameFrom : {[id: string] : Coordinate} = {}
     
@@ -32,10 +36,13 @@ function breadthFirstPathfind(start: Coordinate, end: Coordinate, passableCallba
 
     let current : Coordinate = end
     const path: Coordinate[] = []
-    while (equalCoordinates(current, start)) {
+    while (!equalCoordinates(current, start)) {
         path.push(current)
         const key : string = "" + current.x + "," + current.y + "," + current.z
         current = cameFrom[key]
+
+        if (current === undefined)
+            break
     }
     return path.reverse()
 }

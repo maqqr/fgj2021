@@ -181,5 +181,9 @@ export function getRandomCoordinate(magnitude: number): Coordinate {
 }
 
 export function equalCoordinates(a : Coordinate, b : Coordinate) : boolean{
+    if (a === undefined || b === undefined) {
+        console.error("equalCoordinates: a or b is undefined")
+        return false
+    }
     return a.x === b.x && a.y === b.y && a.z === b.z
 }
