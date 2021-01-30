@@ -19,7 +19,7 @@ export class Resource extends Component<Resource> {
 
 export function resourceTypeToString(resourceType: ResourceType) {
     switch (resourceType) {
-        case ResourceType.Deer: return "Deer"
+        case ResourceType.Deer: return "Reindeer"
         case ResourceType.Mushrooms: return "Mushroom"
         case ResourceType.Ore: return "Rocks"
     }
