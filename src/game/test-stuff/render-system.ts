@@ -69,6 +69,13 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         return this.state.renderer
     }
 
+    interpolateVector(a: {x: number, y: number}, b: {x: number, y: number}, f: number) {
+        // A * f + B * (1.0 - f)
+        const x = a.x * f + b.x * (1.0 - f)
+        const y = a.y * f + b.y * (1.0 - f)
+        return { x, y }
+    }
+
     renderObjects(camera: any) {
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
@@ -142,10 +149,19 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         const coordSystem = this.world.getSystem(CoordinateSystem)
         const passableCallback = coordSystem.isPassable.bind(coordSystem)
         const path = pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)
-        console.log(path)
+        let previous: Coordinate | undefined
         for (const pathCoord of path) {
             const screenPos = coordinateToXY(pathCoord)
             this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+
+            if (previous) {
+                for (let f = 0.0; f < 1.0; f += 0.2) {
+                    const previousScreenPos = coordinateToXY(previous)
+                    const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
+                    this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
+                }
+            }
+            previous = pathCoord
         }
         this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
     }
