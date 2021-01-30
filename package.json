@@ -38,6 +38,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/runtime": "^7.4.3"
+    "@babel/runtime": "^7.4.3",
+    "@chriscourses/perlin-noise": "^1.0.5"
   }
 }

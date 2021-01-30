@@ -27,7 +27,7 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile, Revealed] },
-        buildings: { components: [Coordinate, Building, Revealed] },
+        buildings: { components: [Coordinate, Building] },
         resources: { components: [Coordinate, Resource, Revealed] },
         units: { components: [Coordinate, Unit, Alignment] },
         selection: { components: [Coordinate, Selected] }
