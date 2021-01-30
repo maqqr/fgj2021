@@ -138,12 +138,6 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                 tileSprite, tileHeight, tileHeight)
         })
 
-        this.queries.units.results.forEach(entity => {
-            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
-            this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
-                "worker.png", tileHeight, tileHeight)
-        })
-
         this.queries.resources.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -166,6 +160,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
             this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
                 tileSprite, TileWidth, TileWidth)
+        })
+
+        this.queries.units.results.forEach(entity => {
+            const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
+                "worker.png", tileHeight, tileHeight)
         })
 
         this.queries.selection.results.forEach(entity => {

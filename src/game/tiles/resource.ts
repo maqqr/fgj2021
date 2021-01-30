@@ -16,3 +16,12 @@ export class Resource extends Component<Resource> {
         resource: { type: Types.Number, default: ResourceType.Invalid },
     }
 }
+
+export function resourceTypeToString(resourceType: ResourceType) {
+    switch (resourceType) {
+        case ResourceType.Deer: return "Deer"
+        case ResourceType.Mushrooms: return "Mushroom"
+        case ResourceType.Ore: return "Rocks"
+    }
+    return "Invalid"
+}
