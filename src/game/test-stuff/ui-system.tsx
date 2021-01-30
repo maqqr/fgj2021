@@ -51,10 +51,10 @@ class GUITestSystem extends System {
         const infoWindowUiPos = pixiRenderer.convertToUICoordinates({x: 10, y: 10 })
         let infoWindowStyle
         if (mouse.x < Game.width * 0.4) {
-            infoWindowStyle = `right:${infoWindowUiPos.x}px; top:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+            infoWindowStyle = `right:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
         }
         else {
-            infoWindowStyle = `left:${infoWindowUiPos.x}px; top:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+            infoWindowStyle = `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
         }
 
         const allInfos: any = []
@@ -67,7 +67,7 @@ class GUITestSystem extends System {
             allInfos.push(
                 <div>
                     <h1>Worker</h1>
-                    <p>Health: {""+unit.health} / {""+unit.maxHealth}</p>
+                    <p>Health: {""+Math.floor(unit.health)} / {""+Math.floor(unit.maxHealth)}</p>
                     <p>Strength: {""+unit.strength}</p>
                     <p>Movement: {""+movement.movementPoints} / {""+movement.movementPointsMaximum}</p>
                 </div>

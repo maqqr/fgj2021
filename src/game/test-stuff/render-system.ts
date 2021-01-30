@@ -19,6 +19,7 @@ import { Revealed } from '../tiles/revealed'
 import { TurnStarted } from '../turns/turn-count'
 import { Building } from '../tiles/building'
 import { Alignment, AlignmentType } from '../units/alignment'
+import { Movement } from '../units/movement'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -56,7 +57,9 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             "worker.png",
             "soldier.png",
             "bear.png",
-            "base.png"
+            "base.png",
+            "worker_gray.png",
+            "soldier_gray.png"
         ])
 
 
@@ -177,11 +180,19 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
         this.queries.units.results.forEach(entity => {
             const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            const unit = entity.getComponent(Unit)!
             const alignment = entity.getComponent(Alignment)
             let sprite
             switch (alignment?.value) {
                 case AlignmentType.Player:
-                    sprite = "worker.png"
+                    const movement = entity.getComponent(Movement)
+                    const gray = movement && movement.movementPoints === 0 ? "_gray" : ""
+                    if (unit.canBuild) {
+                        sprite = `worker${gray}.png`
+                    }
+                    else {
+                        sprite = `soldier${gray}.png`
+                    }
                     break
                 case AlignmentType.WildernessBeast:
                     sprite = "wolf.png"
