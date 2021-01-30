@@ -22,8 +22,8 @@ type RenderSystemState = { renderer: PixiRenderer }
 @registerWithPriority(100)
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
-        coordinates: { components: [Coordinate, Tile] },
-        resources: { components: [Coordinate, Resource] },
+        coordinates: { components: [Coordinate, Tile, Revealed] },
+        resources: { components: [Coordinate, Resource, Revealed] },
         units: { components: [Coordinate, Unit] },
         selection: { components: [Coordinate, Selected] }
     }
@@ -36,13 +36,20 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         renderer.loadTextures([
             "test.png",
             "mountain.png",
+            "mountain2.png",
             "tile.png",
+            "tile2.png",
+            "tile3.png",
             "forest.png",
+            "forest2.png",
             "ore.png",
+            "ore2.png",
             "mushrooms.png",
             "deer.png",
             "Selection.png",
-            "error.png"
+            "error.png",
+            "wolf.png",
+            "worker.png"
         ])
 
 
@@ -107,7 +114,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
         this.queries.units.results.forEach(entity => {
             const pos = coordinateToXY(entity.getComponent(Coordinate)!)
-            this.state.renderer.drawCircle(pos.x, pos.y, 10, Color.red)
+            this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
+                "worker.png", tileHeight, tileHeight)
         })
 
         this.queries.resources.results.forEach(entity => {
