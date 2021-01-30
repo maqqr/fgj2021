@@ -22,9 +22,9 @@ export class CoordinateSystem extends System {
         units: { components: [Coordinate, Unit] }
     }
 
-    private positionHash(coord: Coordinate): number {
-        // Old string based hashing was: "" + coord.x + "," + coord.y + "," + coord
-        return coordinateHash(coord)
+    private positionHash(coord: Coordinate): string {
+        // return coordinateHash(coord)
+        return "" + coord.x + "," + coord.y + "," + coord
     }
 
     execute(deltaTime: number, time: number) {
