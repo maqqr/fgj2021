@@ -1,7 +1,7 @@
 import { PixiRenderer } from '../../pixirenderer'
 import { PersistentSystem } from '../../persistent-system'
 import { Color } from '../color'
-import { Camera, Position } from '../components'
+import { AnimatedPosition, Camera, Position } from '../components'
 import { registerWithPriority } from '../../register-system'
 import { Entity, Not } from 'ecsy'
 import { Game } from '../constants'
@@ -169,6 +169,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.queries.units.results.forEach(entity => {
             const entityPos = entity.getComponent(Coordinate)!
             const pos = coordinateToXY(entityPos)
+
+            const animatedPos = entity.getComponent(AnimatedPosition)
+            if (animatedPos) {
+                pos.x = animatedPos.x
+                pos.y = animatedPos.y
+            }
 
             // Units in unrevealed areas are not drawn
             const revealed = this.world.getSystem(CoordinateSystem).getTileAt(entityPos)?.getComponent(Revealed)
