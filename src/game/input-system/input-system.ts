@@ -7,11 +7,11 @@ import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { Unit } from '../units/unit'
 import { Selected } from './selected'
 import { PersistentSystem } from '../../persistent-system'
+import { Movement } from '../units/movement'
 
 @registerWithPriority(92)
 class InputSystem extends PersistentSystem<{}> {
     static queries = {
-        units: { components: [Coordinate, Unit, Not(Selected)] }
     }
     renderer: RenderSystem
     moveDirection: any = {x: 0, y: 0}
@@ -82,12 +82,17 @@ class InputSystem extends PersistentSystem<{}> {
         const camera = this.renderer.getCamera()
         const coordinate = XYToCoordinate(gameMouse.x - camera.x, gameMouse.y - camera.y)
         const coordinateSystem = this.world.getSystem(CoordinateSystem)
+        const clickedEntity = coordinateSystem.getUnitAt(coordinate)
 
-        if (this.selectedEntity) {
+        if (clickedEntity && this.selectedEntity && this.selectedEntity !== clickedEntity) {
+            this.unselectEntity(this.selectedEntity)
+            this.selectEntity(clickedEntity)
+        }
+        else if (!clickedEntity && this.selectedEntity) {
             this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
         }
-        else {
-            this.lookForEntity(coordinateSystem, coordinate)
+        else if (clickedEntity) {
+            this.lookForEntity(clickedEntity, coordinateSystem, coordinate)
         }
     }
 
@@ -95,24 +100,32 @@ class InputSystem extends PersistentSystem<{}> {
         const tileEntity = coordinateSystem.getTileAt(coordinate)
         if (tileEntity) {
             const unitCoordinate = entity.getMutableComponent(Coordinate)!
+            const movement = entity.getMutableComponent(Movement)
+            if (!movement || movement.movementPoints === 0) {
+                return
+            }
             unitCoordinate.x = coordinate.x
             unitCoordinate.y = coordinate.y
             unitCoordinate.z = coordinate.z
+            movement.movementPoints--
+
             this.unselectEntity(entity)
         }
     }
 
-    private lookForEntity(coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
-        const entity = coordinateSystem.getUnitAt(coordinate)!
-
+    private lookForEntity(entity: Entity, coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
         if (entity) {
             if (!entity.getComponent(Selected)) {
-                entity.addComponent(Selected)
-                this.selectedEntity = entity
+                this.selectEntity(entity)
             } else {
                 this.unselectEntity(entity)
             }
         }
+    }
+
+    private selectEntity(entity: Entity) {
+        entity.addComponent(Selected)
+        this.selectedEntity = entity
     }
 
     private unselectEntity(entity: Entity) {

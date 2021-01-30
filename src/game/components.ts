@@ -12,6 +12,10 @@ import './input-system/selected'
 import './input-system/input-system'
 import './units/alignment'
 import './units/unit'
+import './units/movement-reset-system'
+import './turns/turn-count'
+import './turns/turn-system'
+import './turns/turn-system-clean-up'
 
 export function registerComponents(world: World): void {
     for (const componentConstructor of getRegisteredComponents()) {

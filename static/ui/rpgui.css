@@ -307,6 +307,14 @@ inside your html file.
   background-origin: padding-box;
   background-position: center; }
 
+.end-turn {
+  position: relative;
+  float: right;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
 /* game div with soft grey background image*/
 .rpgui-container.framed-grey {
   position: relative;

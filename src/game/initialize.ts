@@ -4,6 +4,7 @@ import { getRandomCoordinate, initializeCoordinates } from '../game/coordinate-s
 import { Coordinate } from './coordinate-system/coordinate'
 import { Unit } from './units/unit'
 import { Alignment, AlignmentType } from './units/alignment'
+import { Movement } from './units/movement'
 
 const UnitSpawnRadius = 4
 
@@ -14,6 +15,7 @@ export function initializeEntities(world: World) {
         const randomUnit = world.createEntity()
         randomUnit.addComponent(Coordinate, getRandomCoordinate(UnitSpawnRadius))
         randomUnit.addComponent(Unit)
+        randomUnit.addComponent(Movement, { movementPoints: 2, movementPointsMaximum: 2 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
     }
 
