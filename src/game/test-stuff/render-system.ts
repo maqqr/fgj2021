@@ -11,6 +11,8 @@ import { Tile, TileType } from '../tiles/tile'
 import { Unit } from '../units/unit'
 import { Resource, ResourceType } from '../tiles/resource'
 import { Selected } from '../input-system/selected'
+import { pathfind } from '../pathfinding'
+import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -123,6 +125,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         const mouse = this.state.renderer.convertToGameCoordinates(this.state.renderer.getMouseUiPosition())
         const mouseHex = XYToCoordinate(mouse.x - cameraX, mouse.y - cameraY, TileWidth)
         const circlePos = coordinateToXY(mouseHex)
+
+        const passableCallback = this.world.getSystem(CoordinateSystem).isPassable
+        for (const pathCoord of pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)) {
+            const screenPos = coordinateToXY(pathCoord)
+            this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+        }
         this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
 
         this.state.renderer.render()

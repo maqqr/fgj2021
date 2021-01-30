@@ -1,6 +1,6 @@
 import { Entity, System } from "ecsy"
 import { registerWithPriority } from "../../register-system"
-import { Tile } from "../tiles/tile"
+import { Tile, TileType } from "../tiles/tile"
 import { Unit } from "../units/unit"
 import { Coordinate } from "./coordinate"
 
@@ -63,5 +63,15 @@ export class CoordinateSystem extends System {
 
     getUnitAt(coord: Coordinate): Entity | null {
         return this.unitCache[this.positionHash(coord)] ?? null
+    }
+
+    isPassable(coord: Coordinate): boolean {
+        const tileEntity = this.getTileAt(coord)
+        if (!tileEntity) {
+            return false
+        }
+
+        const tile = tileEntity.getComponent(Tile)!
+        return tile.tileType !== TileType.Mountain
     }
 }
