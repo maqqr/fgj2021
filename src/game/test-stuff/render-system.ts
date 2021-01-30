@@ -24,6 +24,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         units: { components: [Coordinate, Unit] },
         selection: { components: [Coordinate, Selected] },
     }
+    cameraX = 300
+    cameraY = 300
 
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
@@ -47,6 +49,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.state = { renderer }
     }
 
+    //TODO: miten se menikään se type
+    moveCamera(direction: any, speed: number) {
+        this.cameraX += direction.x * speed
+        this.cameraY += direction.y * speed
+    }
+
     getRenderer(): PixiRenderer {
         return this.state.renderer
     }
@@ -56,11 +64,10 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             return
         }
 
-        const cameraX = 300
-        const cameraY = 300
+
 
         this.state.renderer.clear()
-        this.state.renderer.setCameraOffset({x: cameraX, y: cameraY})
+        this.state.renderer.setCameraOffset({x: this.cameraX, y: this.cameraY})
 
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
@@ -123,7 +130,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         })
 
         const mouse = this.state.renderer.convertToGameCoordinates(this.state.renderer.getMouseUiPosition())
-        const mouseHex = XYToCoordinate(mouse.x - cameraX, mouse.y - cameraY, TileWidth)
+        const mouseHex = XYToCoordinate(mouse.x - this.cameraX, mouse.y - this.cameraY, TileWidth)
         const circlePos = coordinateToXY(mouseHex)
 
         const passableCallback = this.world.getSystem(CoordinateSystem).isPassable

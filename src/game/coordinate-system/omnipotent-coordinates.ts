@@ -4,7 +4,7 @@ import { Tile, TileType } from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
 
 export const TileWidth = 50
-export const Radius = 5
+export const Radius = 50
 
 const typeWeights = [
     { type: TileType.Forest, weight: 50 },
@@ -165,6 +165,5 @@ export function getRandomCoordinate(magnitude: number): Coordinate {
         console.error("getRandomCoordinate generated invalid coordinate")
     }
 
-    console.log(''+rx + ' ' + ry + ' ' + rz)
     return new Coordinate({ x: rx, y: ry, z: rz })
 }
