@@ -16,6 +16,7 @@ import './units/movement-reset-system'
 import './turns/turn-count'
 import './turns/turn-system'
 import './turns/turn-system-clean-up'
+import './units/unit-health-system'
 
 export function registerComponents(world: World): void {
     for (const componentConstructor of getRegisteredComponents()) {

@@ -4,11 +4,12 @@ import { RenderSystem } from '../test-stuff/render-system'
 import { XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
-import { Unit } from '../units/unit'
+import { partialMaxHealth, randomizeStrength, Unit } from '../units/unit'
 import { Selected } from './selected'
 import { PersistentSystem } from '../../persistent-system'
 import { Movement } from '../units/movement'
-import { pathfind } from '../pathfinding'
+import { checkNeighbourCoordinates, pathfind } from '../pathfinding'
+import { Alignment, AlignmentType } from '../units/alignment'
 
 @registerWithPriority(92)
 export class InputSystem extends PersistentSystem<{}> {
@@ -85,19 +86,35 @@ export class InputSystem extends PersistentSystem<{}> {
         const coordinateSystem = this.world.getSystem(CoordinateSystem)
         const clickedEntity = coordinateSystem.getUnitAt(coordinate)
 
-        if (clickedEntity && this.selectedEntity && this.selectedEntity !== clickedEntity) {
-            this.unselectEntity(this.selectedEntity)
-            this.selectEntity(clickedEntity)
+        if (!clickedEntity) {
+            this.handleNoClickedEntity(coordinateSystem, coordinate)
+            return
         }
-        else if (!clickedEntity && this.selectedEntity) {
-            this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
+        const alignment = clickedEntity.getComponent(Alignment)!
+        if (this.selectedEntity) {
+            if (alignment.value === AlignmentType.Player && this.selectedEntity !== clickedEntity) {
+                this.unselectEntity(this.selectedEntity)
+                this.selectEntity(clickedEntity)
+            }
+            if (alignment.value === AlignmentType.WildernessBeast) {
+                this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
+            }
         }
-        else if (clickedEntity) {
-            this.lookForEntity(clickedEntity, coordinateSystem, coordinate)
+        else if (clickedEntity ) {
+            this.lookForEntity(clickedEntity, coordinateSystem, coordinate, alignment.value)
         }
     }
 
-    private moveSelectedEntity(coordinateSystem: CoordinateSystem, coordinate: Coordinate, entity: Entity) {
+    private handleNoClickedEntity(coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
+        if (this.selectedEntity) {
+            this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
+        }
+    }
+
+    private moveSelectedEntity(coordinateSystem: CoordinateSystem,
+        coordinate: Coordinate,
+        entity: Entity) {
+        const moverAlignment = entity.getComponent(Alignment)!
         const tileEntity = coordinateSystem.getTileAt(coordinate)
         if (tileEntity) {
             const unitCoordinate = entity.getMutableComponent(Coordinate)!
@@ -108,7 +125,7 @@ export class InputSystem extends PersistentSystem<{}> {
             const coordSystem = this.world.getSystem(CoordinateSystem)
             const passableCallback = coordSystem.isPassable.bind(coordSystem)
 
-            let path = pathfind(unitCoordinate, coordinate, passableCallback)
+            const path = pathfind(unitCoordinate, coordinate, passableCallback)
             if (!path || path.length === 0){
                 return
             }
@@ -116,20 +133,48 @@ export class InputSystem extends PersistentSystem<{}> {
 
             let step = 0
             while (movement.movementPoints > 0 && step < path.length) {
+                if (entity.getComponent(Unit)!.health <= 0) {
+                    return
+                }
                 const stepFromPath = path[step]
                 unitCoordinate.x = stepFromPath.x
                 unitCoordinate.y = stepFromPath.y
                 unitCoordinate.z = stepFromPath.z
                 movement.movementPoints--
                 step++
+                const fightNearby = (fightCoordinate: Coordinate) => {
+                    if (entity.getComponent(Unit)!.health <= 0) {
+                        return true
+                    }
+                    const possibleTarget = coordinateSystem.getUnitAt(fightCoordinate)
+                    if (possibleTarget && possibleTarget.getComponent(Alignment)?.value !== moverAlignment.value) {
+                        this.fight(entity, possibleTarget)
+                        return true
+                    }
+                    return true
+                }
+
+                checkNeighbourCoordinates(unitCoordinate, fightNearby)
             }
 
             this.unselectEntity(entity)
         }
     }
 
-    private lookForEntity(entity: Entity, coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
-        if (entity) {
+    private fight(fighter: Entity, secondFighter: Entity) {
+        const unit = fighter.getMutableComponent(Unit)!
+        const secondUnit = secondFighter.getMutableComponent(Unit)!
+        const firstStrength = randomizeStrength(unit)
+        const secondStrength = randomizeStrength(secondUnit)
+        const fullHealthLoss = partialMaxHealth(unit) + partialMaxHealth(secondUnit)
+        const fullStrength = firstStrength + secondStrength
+        unit.health -= secondStrength / fullStrength * fullHealthLoss
+        secondUnit.health -= firstStrength / fullStrength * fullHealthLoss
+    }
+
+    private lookForEntity(
+        entity: Entity, coordinateSystem: CoordinateSystem, coordinate: Coordinate, alignment: AlignmentType) {
+        if(alignment === AlignmentType.Player) {
             if (!entity.getComponent(Selected)) {
                 this.selectEntity(entity)
             } else {

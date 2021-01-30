@@ -18,6 +18,7 @@ import { TurnEntityName } from '../turns/turn-system'
 import { Revealed } from '../tiles/revealed'
 import { TurnStarted } from '../turns/turn-count'
 import { Building } from '../tiles/building'
+import { Alignment, AlignmentType } from '../units/alignment'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -27,7 +28,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         coordinates: { components: [Coordinate, Tile, Revealed] },
         buildings: { components: [Coordinate, Building, Revealed] },
         resources: { components: [Coordinate, Resource, Revealed] },
-        units: { components: [Coordinate, Unit] },
+        units: { components: [Coordinate, Unit, Alignment] },
         selection: { components: [Coordinate, Selected] }
     }
 
@@ -170,14 +171,27 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
+        this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
                 tileSprite, TileWidth, TileWidth)
         })
 
         this.queries.units.results.forEach(entity => {
             const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+            const alignment = entity.getComponent(Alignment)
+            let sprite
+            switch (alignment?.value) {
+                case AlignmentType.Player:
+                    sprite = "worker.png"
+                    break
+                case AlignmentType.WildernessBeast:
+                    sprite = "wolf.png"
+                    break
+                default:
+                    sprite = "error.png"
+                    break
+            }
             this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
-                "worker.png", tileHeight, tileHeight)
+                sprite, tileHeight, tileHeight)
         })
 
         this.queries.selection.results.forEach(entity => {
