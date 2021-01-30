@@ -44,6 +44,12 @@ export function getTilePath(tile: Tile): string {
                 case 2:
                     tileSprite = "tile3.png"
                     break
+                case 3: // lolz, nice weighting my dudes
+                    tileSprite = "tile2.png"
+                    break
+                case 4: // lolz
+                    tileSprite = "tile2.png"
+                    break
             }
             break
         case TileType.Mountain:
@@ -78,7 +84,7 @@ export function tileTypeVariationAmount(tileType: TileType): number {
     switch (tileType) {
         case TileType.Invalid: return 1
         case TileType.Forest: return 2
-        case TileType.Snow: return 3
+        case TileType.Snow: return 5
         case TileType.Mountain: return 2
     }
 }
