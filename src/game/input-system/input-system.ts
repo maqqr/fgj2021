@@ -10,7 +10,7 @@ import { PersistentSystem } from '../../persistent-system'
 import { Movement } from '../units/movement'
 
 @registerWithPriority(92)
-class InputSystem extends PersistentSystem<{}> {
+export class InputSystem extends PersistentSystem<{}> {
     static queries = {
     }
     renderer: RenderSystem

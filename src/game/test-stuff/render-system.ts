@@ -3,7 +3,7 @@ import { PersistentSystem } from '../../persistent-system'
 import { Color } from '../color'
 import { Camera, Position } from '../components'
 import { registerWithPriority } from '../../register-system'
-import { Not } from 'ecsy'
+import { Entity, Not } from 'ecsy'
 import { Game } from '../constants'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
@@ -11,6 +11,7 @@ import { Tile, TileType } from '../tiles/tile'
 import { Unit } from '../units/unit'
 import { Resource, ResourceType } from '../tiles/resource'
 import { Selected } from '../input-system/selected'
+import { InputSystem } from '../input-system/input-system'
 import { pathfind } from '../pathfinding'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { TurnEntityName } from '../turns/turn-system'
@@ -74,6 +75,29 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         const x = a.x * f + b.x * (1.0 - f)
         const y = a.y * f + b.y * (1.0 - f)
         return { x, y }
+    }
+
+    drawPathing(entity: Entity, mouseHex: Coordinate) {
+        //Draw path from origin to the hex under mouse
+        const coordSystem = this.world.getSystem(CoordinateSystem)
+        const passableCallback = coordSystem.isPassable.bind(coordSystem)
+        const selectedOrigin = entity.getComponent(Coordinate)!
+
+        const path = pathfind(selectedOrigin, mouseHex, passableCallback)
+        let previous: Coordinate | undefined
+        for (const pathCoord of path) {
+            const screenPos = coordinateToXY(pathCoord)
+            this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+
+            if (previous) {
+                for (let f = 0.0; f < 1.0; f += 0.2) {
+                    const previousScreenPos = coordinateToXY(previous)
+                    const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
+                    this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
+                }
+            }
+            previous = pathCoord
+        }
     }
 
     renderObjects(camera: any) {
@@ -145,24 +169,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             console.error("mouseHex is undefined")
         }
 
-        //Draw path from origin to the hex under mouse
-        const coordSystem = this.world.getSystem(CoordinateSystem)
-        const passableCallback = coordSystem.isPassable.bind(coordSystem)
-        const path = pathfind(new Coordinate({ x: 0, y: 0, z: 0 }), mouseHex, passableCallback)
-        let previous: Coordinate | undefined
-        for (const pathCoord of path) {
-            const screenPos = coordinateToXY(pathCoord)
-            this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
+        const selectedEntity = this.world.getSystem(InputSystem).selectedEntity
 
-            if (previous) {
-                for (let f = 0.0; f < 1.0; f += 0.2) {
-                    const previousScreenPos = coordinateToXY(previous)
-                    const interpolatedPos = this.interpolateVector(screenPos, previousScreenPos, f)
-                    this.state.renderer.drawCircle(interpolatedPos.x, interpolatedPos.y, 4, Color.blue)
-                }
-            }
-            previous = pathCoord
+        if (selectedEntity) {
+            this.drawPathing(selectedEntity, mouseHex)
         }
+
         this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
     }
 
