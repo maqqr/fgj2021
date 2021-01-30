@@ -4,7 +4,7 @@ import { TurnCount, TurnEndOrder, TurnStarted } from './turn-count'
 
 export const TurnEntityName = 'turnBuoy'
 
-export let turnEvents: any = {
+export let turnEvents = {
     components: [TurnCount, TurnEndOrder],
     listen: {
         added: true

@@ -47,8 +47,19 @@ export class FogOfWarSystem extends System {
             if (entity.getComponent(Alignment)!.value !== AlignmentType.Player)
                 return
 
+            let unitViewRadius = 2
             const unitCoord = entity.getComponent(Coordinate)!
-            this.checkFieldOfView(unitCoord, 2)
+            const tileUnderUnit = this.world.getSystem(CoordinateSystem).getTileAt(unitCoord)
+            if (tileUnderUnit) {
+                const tileType = tileUnderUnit.getComponent(Tile)!.tileType
+                if (tileType === TileType.Hill) {
+                    unitViewRadius = 4
+                }
+                else if (tileType === TileType.Forest) {
+                    unitViewRadius = 1
+                }
+            }
+            this.checkFieldOfView(unitCoord, unitViewRadius)
         })
 
         this.queries.buildings.results.forEach(entity => {

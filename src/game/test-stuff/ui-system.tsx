@@ -3,7 +3,7 @@
 import { h, render } from 'petit-dom'
 import { System } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { Position, Velocity } from '../components'
+import { Camera, Position, Velocity } from '../components'
 import { Player } from './example-components'
 import { RenderSystem } from './render-system'
 import { Game } from '../constants'
@@ -11,18 +11,22 @@ import { TurnEntityName } from '../turns/turn-system'
 import { TurnEndOrder } from '../turns/turn-count'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
-import { TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
+import { coordinateToXY, TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Movement } from '../units/movement'
 import { Unit } from '../units/unit'
 import { Resource, resourceTypeToString } from '../tiles/resource'
 import { Building } from '../tiles/building'
+import { DamageTaken } from '../units/damage-taken'
 import { Carriage } from '../units/carriage'
+import { Alignment, AlignmentType } from '../units/alignment'
 
 @registerWithPriority(4)
 class GUITestSystem extends System {
     static queries = {
         players: { components: [Player, Position] },
-        withPosition: { components: [Position] }
+        withPosition: { components: [Position] },
+        damage: { components: [DamageTaken, Position] },
+        units: { components: [Coordinate, Unit, Alignment] }
     }
 
     onSpawnButtonClicked(evt: any) {
@@ -178,15 +182,40 @@ class GUITestSystem extends System {
                 </div>
             </div>
 
-        const positionTextsOnTopOnEntities =
+        const camera = this.world.getSystem(RenderSystem).getCamera()
+        const damageTexts =
             <div>
                 {
-                this.queries.withPosition.results.map(entity => {
+                this.queries.damage.results.map(entity => {
                     const pos = entity.getComponent(Position)!
-                    const uiPosition = pixiRenderer.convertToUICoordinates(pos)
+                    const damage = entity.getComponent(DamageTaken)!
+                    const cameraFix = { x: pos.x + camera.x, y: pos.y + camera.y }
+                    const uiPosition = pixiRenderer.convertToUICoordinates(cameraFix)
                     const textStyle = `z-index:-10; position:fixed; left:${uiPosition.x}px; top:${uiPosition.y}px;`
-                                    + `transform: translate(-50%, -50%)`
-                    return <span style={textStyle as any}>{`(${Math.floor(pos.x)}, ${Math.floor(pos.y)})`}</span>
+                                    + `transform: translate(-50%, -50%); color: lightcoral`
+                    return <span style={textStyle as any}>{`-${Math.floor(damage.value)}`}</span>
+                })
+                }
+            </div>
+
+        const nameTexts =
+            <div>
+                {
+                this.queries.units.results.map(entity => {
+                    const alignment = entity.getComponent(Alignment)!
+                    if (alignment.value === AlignmentType.Player) {
+                        const pos = coordinateToXY(entity.getComponent(Coordinate)!)
+                        pos.y += 25
+                        const unit = entity.getComponent(Unit)!
+                        const cameraFix = { x: pos.x + camera.x, y: pos.y + camera.y }
+                        const uiPosition = pixiRenderer.convertToUICoordinates(cameraFix)
+                        const textStyle = `z-index:-10; position:fixed; left:${uiPosition.x}px; top:${uiPosition.y}px;`
+                                        + `transform: translate(-50%, -50%); color: white`
+                        return <span style={textStyle as any}>{unit.name}</span>
+                    }
+                    else {
+                        return <div></div>
+                    }
                 })
                 }
             </div>
@@ -205,7 +234,8 @@ class GUITestSystem extends System {
         const finalUi =
             <div>
                 {/* {uiWindow} */}
-                {/* {positionTextsOnTopOnEntities} */}
+                {nameTexts}
+                {damageTexts}
                 {infoWindow}
                 {endTurnButton}
             </div>

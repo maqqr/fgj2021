@@ -10,7 +10,7 @@ import { PersistentSystem } from '../../persistent-system'
 import { Movement } from '../units/movement'
 import { checkNeighbourCoordinates, pathfind } from '../pathfinding'
 import { Alignment, AlignmentType } from '../units/alignment'
-import { Position } from '../components'
+import { Position, Velocity } from '../components'
 import { DamageTaken } from '../units/damage-taken'
 import { Resource } from '../tiles/resource'
 import { Carriage } from '../units/carriage'
@@ -201,6 +201,7 @@ export class InputSystem extends PersistentSystem<{}> {
         const position = coordinateToXY(coordinate)
         const damagee = this.world.createEntity()
         damagee.addComponent(Position, position)
+        damagee.addComponent(Velocity, { x: 0, y: -20 })
         damagee.addComponent(DamageTaken, { value: damageAmount })
     }
 
