@@ -28,6 +28,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         selection: { components: [Coordinate, Selected] }
     }
 
+    private static magicSize: number = 1.12
+
     initializeState() {
         const renderer = new PixiRenderer(Game.width, Game.height)
         renderer.initialize()
@@ -77,6 +79,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
     }
 
     renderObjects(camera: any) {
+        const tileHeight = TileWidth * RenderSystem.magicSize
+
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -97,8 +101,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                     break
             }
 
-            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
-                tileSprite, TileWidth, TileWidth)
+            this.state.renderer.drawTexture(asPosition.x - tileHeight / 2, asPosition.y - tileHeight / 2,
+                tileSprite, tileHeight, tileHeight)
         })
 
         this.queries.units.results.forEach(entity => {
