@@ -82,13 +82,17 @@ class InputSystem extends PersistentSystem<{}> {
         const camera = this.renderer.getCamera()
         const coordinate = XYToCoordinate(gameMouse.x - camera.x, gameMouse.y - camera.y)
         const coordinateSystem = this.world.getSystem(CoordinateSystem)
-        const entity = coordinateSystem.getUnitAt(coordinate)
+        const clickedEntity = coordinateSystem.getUnitAt(coordinate)
 
-        if (entity !== this.selectedEntity && this.selectedEntity) {
+        if (clickedEntity && this.selectedEntity && this.selectedEntity !== clickedEntity) {
+            this.unselectEntity(this.selectedEntity)
+            this.selectEntity(clickedEntity)
+        }
+        else if (!clickedEntity && this.selectedEntity) {
             this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
         }
-        else if (entity) {
-            this.lookForEntity(entity, coordinateSystem, coordinate)
+        else if (clickedEntity) {
+            this.lookForEntity(clickedEntity, coordinateSystem, coordinate)
         }
     }
 
@@ -112,12 +116,16 @@ class InputSystem extends PersistentSystem<{}> {
     private lookForEntity(entity: Entity, coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
         if (entity) {
             if (!entity.getComponent(Selected)) {
-                entity.addComponent(Selected)
-                this.selectedEntity = entity
+                this.selectEntity(entity)
             } else {
                 this.unselectEntity(entity)
             }
         }
+    }
+
+    private selectEntity(entity: Entity) {
+        entity.addComponent(Selected)
+        this.selectedEntity = entity
     }
 
     private unselectEntity(entity: Entity) {
