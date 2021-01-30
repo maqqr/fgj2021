@@ -1,7 +1,7 @@
 import { Not, Entity } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
 import { RenderSystem } from '../test-stuff/render-system'
-import { XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
+import { coordinateToXY, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { partialMaxHealth, randomizeStrength, Unit } from '../units/unit'
@@ -10,6 +10,8 @@ import { PersistentSystem } from '../../persistent-system'
 import { Movement } from '../units/movement'
 import { checkNeighbourCoordinates, pathfind } from '../pathfinding'
 import { Alignment, AlignmentType } from '../units/alignment'
+import { Position } from '../components'
+import { DamageTaken } from '../units/damage-taken'
 
 @registerWithPriority(92)
 export class InputSystem extends PersistentSystem<{}> {
@@ -169,8 +171,17 @@ export class InputSystem extends PersistentSystem<{}> {
         const secondStrength = randomizeStrength(secondUnit)
         const fullHealthLoss = partialMaxHealth(unit) + partialMaxHealth(secondUnit)
         const fullStrength = firstStrength + secondStrength
-        unit.health -= secondStrength / fullStrength * fullHealthLoss
-        secondUnit.health -= firstStrength / fullStrength * fullHealthLoss
+        this.dealDamage(unit, fighter, secondStrength / fullStrength * fullHealthLoss)
+        this.dealDamage(secondUnit, secondFighter, firstStrength / fullStrength * fullHealthLoss)
+    }
+
+    private dealDamage(unit: Unit, entity: Entity, damageAmount: number) {
+        unit.health -= damageAmount
+        const coordinate = entity.getComponent(Coordinate)!
+        const position = coordinateToXY(coordinate)
+        const damagee = this.world.createEntity()
+        damagee.addComponent(Position, position)
+        damagee.addComponent(DamageTaken, { value: damageAmount })
     }
 
     private lookForEntity(
