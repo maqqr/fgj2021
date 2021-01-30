@@ -2,7 +2,7 @@ import { Not, Entity } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
 import { RenderSystem } from '../test-stuff/render-system'
 import { coordinateToXY, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
-import { Coordinate, coordinateStringHash } from '../coordinate-system/coordinate'
+import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { partialMaxHealth, randomizeStrength, Unit } from '../units/unit'
 import { Selected } from './selected'
@@ -12,9 +12,6 @@ import { checkNeighbourCoordinates, pathfind } from '../pathfinding'
 import { Alignment, AlignmentType } from '../units/alignment'
 import { Position, Velocity } from '../components'
 import { DamageTaken } from '../units/damage-taken'
-import { Resource } from '../tiles/resource'
-import { Carriage } from '../units/carriage'
-import { Building } from '../tiles/building'
 
 @registerWithPriority(92)
 export class InputSystem extends PersistentSystem<{}> {
@@ -97,6 +94,9 @@ export class InputSystem extends PersistentSystem<{}> {
         }
         const alignment = clickedEntity.getComponent(Alignment)!
         if (this.selectedEntity) {
+            if (alignment.value === AlignmentType.Player && this.selectedEntity === clickedEntity){
+                this.unselectEntity(this.selectedEntity)
+            }
             if (alignment.value === AlignmentType.Player && this.selectedEntity !== clickedEntity) {
                 this.unselectEntity(this.selectedEntity)
                 this.selectEntity(clickedEntity)
@@ -159,25 +159,8 @@ export class InputSystem extends PersistentSystem<{}> {
                     }
                     return true
                 }
-                if (entity.getComponent(Unit)!.health <= 0) {
-                    return true
-                }
-                checkNeighbourCoordinates(unitCoordinate, fightNearby)
 
-                const carriage = entity.getMutableComponent(Carriage)
-                const tileStepped = coordinateSystem.getTileAt(stepFromPath)!
-                if (carriage && !carriage.value){
-                    const possibleResource = tileStepped.getComponent(Resource)
-                    if (possibleResource) {
-                        carriage.value = possibleResource.resource
-                        tileStepped.removeComponent(Resource)
-                    }
-                }
-                const house = tileStepped.getMutableComponent(Building)
-                if (house && carriage && carriage.value) {
-                    house.containedResources++
-                    carriage.value = null
-                }
+                checkNeighbourCoordinates(unitCoordinate, fightNearby)
             }
 
             this.unselectEntity(entity)
