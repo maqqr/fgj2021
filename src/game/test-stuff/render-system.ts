@@ -68,21 +68,7 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         return this.state.renderer
     }
 
-    execute(delta: number, time: number) {
-        if (!this.state.renderer.isReady()) {
-            return
-        }
-
-        const camera = this.getCamera()
-
-        this.state.renderer.clear()
-        this.state.renderer.setCameraOffset(camera)
-
-        const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
-        if (turnEntity?.getComponent(TurnStarted)){
-            return
-        }
-
+    renderObjects(camera: any) {
         this.queries.coordinates.results.forEach(entity => {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
@@ -154,6 +140,22 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         //     this.state.renderer.drawCircle(screenPos.x, screenPos.y, 8, Color.blue)
         // }
         this.state.renderer.drawCircle(circlePos.x, circlePos.y, 15, Color.blue)
+    }
+
+    execute(delta: number, time: number) {
+        if (!this.state.renderer.isReady()) {
+            return
+        }
+
+        const camera = this.getCamera()
+
+        this.state.renderer.clear()
+        this.state.renderer.setCameraOffset(camera)
+
+        const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
+        if (!(turnEntity?.getComponent(TurnStarted))){
+            this.renderObjects(camera)
+        }
 
         this.state.renderer.render()
     }

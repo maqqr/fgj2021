@@ -5,12 +5,6 @@ import { TurnCount, TurnEndOrder, TurnStarted } from './turn-count'
 export const TurnEntityName = 'turnBuoy'
 
 // tslint:disable-next-line: one-variable-per-declaration
-export let startingTurn: any = {
-    components: [TurnCount, TurnStarted],
-    listen: {
-        added: true
-    }
-}
 
 export let turnEvents: any = {
     components: [TurnCount, TurnEndOrder],
@@ -39,19 +33,6 @@ export class TurnSystem extends System {
 
             entity.removeComponent(TurnEndOrder)
             entity.addComponent(TurnStarted)
-        })
-    }
-}
-
-@registerWithPriority(10000)
-export class TurnSystemCleanUp extends System {
-    static queries = {
-        startingTurn
-    }
-
-    execute(delta: number, time: number): void {
-        this.queries.startingTurn.added!.forEach(entity => {
-            entity.removeComponent(TurnStarted)
         })
     }
 }
