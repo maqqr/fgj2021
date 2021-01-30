@@ -50,7 +50,9 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             "Selection.png",
             "error.png",
             "wolf.png",
-            "worker.png"
+            "worker.png",
+            "soldier.png",
+            "bear.png"
         ])
 
 
