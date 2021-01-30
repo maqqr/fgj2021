@@ -81,7 +81,8 @@ function aStarPathfind(start: Coordinate, end: Coordinate, passableCallback: (po
     return []
 }
 
-function checkNeighbourCoordinates(origin: Coordinate, passableCallback: (pos: Coordinate) => Boolean) : Coordinate[]{
+export function checkNeighbourCoordinates(origin: Coordinate, passableCallback: (pos: Coordinate) => Boolean)
+    : Coordinate[]{
     const result : Coordinate[] = []
 
     const unfilteredNeighbors : Coordinate[] =  getNeighbourCoordinates(origin)
@@ -93,5 +94,5 @@ function checkNeighbourCoordinates(origin: Coordinate, passableCallback: (pos: C
         }
     }
 
-    return result;
+    return result
 }
