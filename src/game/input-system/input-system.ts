@@ -21,7 +21,7 @@ class InputSystem extends PersistentSystem<{}> {
     onKeydownListener: EventListener
     onKeyupListener: EventListener
 
-    init() {
+    initialize() {
         this.renderer = this.world.getSystem(RenderSystem) as RenderSystem
         this.onClickListener = this.handleMouseClick.bind(this)
         this.onKeydownListener = this.handleKeyPress.bind(this)
@@ -32,11 +32,11 @@ class InputSystem extends PersistentSystem<{}> {
     }
 
     initializeState() {
-        this.state = {}
+        this.initialize()
     }
 
     restoreState(state: {}) {
-        this.state = state
+        this.initialize()
     }
 
     dumpState() {
