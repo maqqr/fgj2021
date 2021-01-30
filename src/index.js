@@ -77,6 +77,6 @@ if (module.hot) {
 
     module.hot.accept('./game/components.ts', function() {
         console.log("Accepting updated components");
-        reloadWorld();
+        //reloadWorld(); disabled for now
     });
 }

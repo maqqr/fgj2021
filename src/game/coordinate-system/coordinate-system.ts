@@ -1,8 +1,8 @@
 import { Entity, System } from "ecsy"
 import { registerWithPriority } from "../../register-system"
-import { Tile } from "../tiles/tile"
+import { Tile, TileType } from "../tiles/tile"
 import { Unit } from "../units/unit"
-import { Coordinate } from "./coordinate"
+import { Coordinate, coordinateHash } from "./coordinate"
 
 @registerWithPriority(1)
 export class CoordinateSystem extends System {
@@ -22,8 +22,9 @@ export class CoordinateSystem extends System {
         units: { components: [Coordinate, Unit] }
     }
 
-    private positionHash(coord: Coordinate): string {
-        return "" + coord.x + "," + coord.y + "," + coord.z
+    private positionHash(coord: Coordinate): number {
+        // Old string based hashing was: "" + coord.x + "," + coord.y + "," + coord
+        return coordinateHash(coord)
     }
 
     execute(deltaTime: number, time: number) {
@@ -63,5 +64,15 @@ export class CoordinateSystem extends System {
 
     getUnitAt(coord: Coordinate): Entity | null {
         return this.unitCache[this.positionHash(coord)] ?? null
+    }
+
+    isPassable(coord: Coordinate): boolean {
+        const tileEntity = this.getTileAt(coord)
+        if (!tileEntity) {
+            return false
+        }
+
+        const tile = tileEntity.getComponent(Tile)!
+        return tile.tileType !== TileType.Mountain
     }
 }
