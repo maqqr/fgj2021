@@ -6,7 +6,8 @@ export const enum TileType {
     Invalid = 0,
     Forest = 1,
     Snow,
-    Mountain
+    Mountain,
+    Hill
 }
 
 @registerComponent
@@ -57,11 +58,14 @@ export function getTilePath(tile: Tile): string {
                 case 0:
                     tileSprite = "mountain.png"
                     break
-                case 1:
+            }
+            break
+        case TileType.Hill:
+            switch (tile.tileVariation) {
+                case 0:
                     tileSprite = "mountain2.png"
                     break
             }
-            break
     }
     if (tileSprite === "error.png") {
         console.error("Had error in tile " + tileTypeTypeToString(tile.tileType) + " " + tile.tileVariation)
@@ -77,6 +81,7 @@ export function tileTypeTypeToString(tileType: TileType) {
         case TileType.Forest: return "Forest"
         case TileType.Snow: return "Snow"
         case TileType.Mountain: return "Mountain"
+        case TileType.Hill: return "Hill"
     }
 }
 
@@ -85,6 +90,7 @@ export function tileTypeVariationAmount(tileType: TileType): number {
         case TileType.Invalid: return 1
         case TileType.Forest: return 2
         case TileType.Snow: return 5
-        case TileType.Mountain: return 2
+        case TileType.Mountain: return 1
+        case TileType.Hill: return 1
     }
 }
