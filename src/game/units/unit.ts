@@ -10,11 +10,13 @@ export class Unit extends Component<Unit> {
     canBuild: boolean
     health: number
     maxHealth: number
+    name: string
 
     static schema = {
         strength: { type: Types.Number, default: 1 },
         canBuild: { type: Types.Boolean, default: false },
         health: { type: Types.Number, default: 100 },
-        maxHealth: {type: Types.Number, default: 100 }
+        maxHealth: {type: Types.Number, default: 100 },
+        name: { type: Types.String, default: "Jorma"}
     }
 }
