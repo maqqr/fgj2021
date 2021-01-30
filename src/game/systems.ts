@@ -7,6 +7,7 @@ import { Game } from './constants'
 import './test-stuff/render-system'
 import './test-stuff/ui-system'
 import './coordinate-system/coordinate-system'
+import './fog-of-war/fow-system'
 
 export function registerSystems(world: World): void {
     // Register all @registerWithPriority systems

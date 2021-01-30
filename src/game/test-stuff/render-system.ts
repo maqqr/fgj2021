@@ -13,6 +13,7 @@ import { Resource, ResourceType } from '../tiles/resource'
 import { Selected } from '../input-system/selected'
 import { pathfind } from '../pathfinding'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
+import { Revealed } from '../tiles/revealed'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -20,7 +21,7 @@ type RenderSystemState = { renderer: PixiRenderer }
 export class RenderSystem extends PersistentSystem<RenderSystemState> {
     static queries = {
         coordinates: { components: [Coordinate, Tile] },
-        resources: { components: [Coordinate, Resource] },
+        resources: { components: [Coordinate, Resource, Revealed] },
         units: { components: [Coordinate, Unit] },
         selection: { components: [Coordinate, Selected] },
     }

@@ -36,3 +36,7 @@ export function coordinateHash(coord: Coordinate): number {
     // https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function
     return hash3(coord.x, coord.y, coord.z)
 }
+
+export function coordinateStringHash(coord: Coordinate): string {
+    return "" + coord.x + "," + coord.y + "," + coord.z
+}
