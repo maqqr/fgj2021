@@ -2,7 +2,7 @@ import { Entity, System } from "ecsy"
 import { registerWithPriority } from "../../register-system"
 import { Tile, TileType } from "../tiles/tile"
 import { Unit } from "../units/unit"
-import { Coordinate } from "./coordinate"
+import { Coordinate, coordinateHash } from "./coordinate"
 
 @registerWithPriority(1)
 export class CoordinateSystem extends System {
@@ -22,8 +22,9 @@ export class CoordinateSystem extends System {
         units: { components: [Coordinate, Unit] }
     }
 
-    private positionHash(coord: Coordinate): string {
-        return "" + coord.x + "," + coord.y + "," + coord.z
+    private positionHash(coord: Coordinate): number {
+        // Old string based hashing was: "" + coord.x + "," + coord.y + "," + coord
+        return coordinateHash(coord)
     }
 
     execute(deltaTime: number, time: number) {

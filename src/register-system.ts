@@ -5,15 +5,19 @@ export type SystemWithPriority = {
     systemConstructor: SystemConstructor<System<Entity>>,
 }
 
-const registeredSystems: SystemWithPriority[] = []
+const registeredSystems: {[id: string]: SystemWithPriority} = {}
 
-export function getPrioritySystems(): SystemWithPriority[] {
-    return registeredSystems
+export function* getPrioritySystems() {
+    for (const key in registeredSystems) {
+        if (registeredSystems.hasOwnProperty(key)) {
+            yield registeredSystems[key]
+        }
+    }
 }
 
 /** Class decorator that automatically adds it to the list of registered systems. */
 export function registerWithPriority(priorityNumber: number) {
     return (constructor: SystemConstructor<System<Entity>>) => {
-        registeredSystems.push({ priority: priorityNumber, systemConstructor: constructor })
+        registeredSystems[constructor.name] = { priority: priorityNumber, systemConstructor: constructor }
     }
 }

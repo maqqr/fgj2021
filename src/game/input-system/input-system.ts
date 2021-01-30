@@ -1,4 +1,4 @@
-import { Not, System } from 'ecsy'
+import { Not } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
 import { RenderSystem } from '../test-stuff/render-system'
 import { XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
@@ -6,9 +6,10 @@ import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { Unit } from '../units/unit'
 import { Selected } from './selected'
+import { PersistentSystem } from '../../persistent-system'
 
 @registerWithPriority(92)
-class InputSystem extends System {
+class InputSystem extends PersistentSystem<{}> {
     static queries = {
         units: { components: [Coordinate, Unit, Not(Selected)] }
     }
@@ -16,11 +17,33 @@ class InputSystem extends System {
     moveDirection: any = {x: 0, y: 0}
     cameraSpeed = 100
 
+    onClickListener: EventListener
+    onKeydownListener: EventListener
+    onKeyupListener: EventListener
+
     init() {
         this.renderer = this.world.getSystem(RenderSystem) as RenderSystem
-        window.addEventListener('click', (evt: any) => this.handleMouseClick(evt))
-        window.addEventListener('keydown', (evt: any) => this.handleKeyPress(evt))
-        window.addEventListener('keyup', (evt: any) => this.resetKeyPress(evt))
+        this.onClickListener = this.handleMouseClick.bind(this)
+        this.onKeydownListener = this.handleKeyPress.bind(this)
+        this.onKeyupListener = this.resetKeyPress.bind(this)
+        window.addEventListener('click', this.onClickListener)
+        window.addEventListener('keydown', this.onKeydownListener)
+        window.addEventListener('keyup', this.onKeyupListener)
+    }
+
+    initializeState() {
+        this.state = {}
+    }
+
+    restoreState(state: {}) {
+        this.state = state
+    }
+
+    dumpState() {
+        window.removeEventListener('click', this.onClickListener)
+        window.removeEventListener('keydown', this.onKeydownListener)
+        window.removeEventListener('keyup', this.onKeyupListener)
+        return {}
     }
 
     handleKeyPress = (evt: KeyboardEvent) => {
