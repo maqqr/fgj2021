@@ -25,3 +25,12 @@ export function resourceTypeToString(resourceType: ResourceType) {
     }
     return "Invalid"
 }
+
+export function resourceTypeToTexture(resourceType: ResourceType) {
+    switch (resourceType) {
+        case ResourceType.Deer: return "deer.png"
+        case ResourceType.Mushrooms: return "mushrooms.png"
+        case ResourceType.Ore: return "ore.png"
+    }
+    return "error.png"
+}

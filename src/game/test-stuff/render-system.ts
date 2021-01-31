@@ -9,7 +9,7 @@ import { Coordinate } from '../coordinate-system/coordinate'
 import { coordinateToXY, TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Tile, TileType, getTilePath } from '../tiles/tile'
 import { Unit } from '../units/unit'
-import { Resource, ResourceType } from '../tiles/resource'
+import { Resource, ResourceType, resourceTypeToString, resourceTypeToTexture } from '../tiles/resource'
 import { Selected } from '../input-system/selected'
 import { InputSystem } from '../input-system/input-system'
 import { pathfind } from '../pathfinding'
@@ -20,6 +20,7 @@ import { TurnStarted } from '../turns/turn-count'
 import { Building } from '../tiles/building'
 import { Alignment, AlignmentType } from '../units/alignment'
 import { Movement } from '../units/movement'
+import { Carriage } from '../units/carriage'
 
 type RenderSystemState = { renderer: PixiRenderer }
 
@@ -146,23 +147,8 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             const coordinate = entity.getComponent(Coordinate, false)!
             const asPosition = coordinateToXY(coordinate)
             const tile = entity.getComponent(Resource)!
-            let tileSprite
-            switch (tile.resource) {
-                case ResourceType.Deer:
-                    tileSprite = "deer.png"
-                    break
-                case ResourceType.Mushrooms:
-                    tileSprite = "mushrooms.png"
-                    break
-                case ResourceType.Ore:
-                    tileSprite = "ore.png"
-                    break
-                default:
-                    tileSprite = "error.png"
-                    break
-            }
-
-        this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
+            const tileSprite = resourceTypeToTexture(tile.resource)
+            this.state.renderer.drawTexture(asPosition.x - TileWidth / 2, asPosition.y - TileWidth / 2,
                 tileSprite, TileWidth, TileWidth)
         })
 
@@ -193,6 +179,18 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
             }
             this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
                 sprite, tileHeight, tileHeight)
+
+            const carry = entity.getComponent(Carriage)
+            if (carry !== undefined && carry.value !== null) {
+                const resourceSprite = resourceTypeToTexture(carry.value)
+                const rotation = 3.14
+                let w = TileWidth * 0.95
+                let h = TileWidth * 0.95
+                this.state.renderer.drawTexture(pos.x - w / 2, pos.y - h / 2, resourceSprite, w, h, 0x000000)
+                w = TileWidth * 0.8
+                h = TileWidth * 0.8
+                this.state.renderer.drawTexture(pos.x - w / 2, pos.y - h / 2, resourceSprite, w, h, 0xFFFFFF)
+            }
         })
 
         this.queries.selection.results.forEach(entity => {
