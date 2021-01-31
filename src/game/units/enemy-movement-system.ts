@@ -22,7 +22,7 @@ export class EnemyMovementSystem extends System {
             this.queries.units.results.forEach(entity => {
                 const coordSystem : CoordinateSystem = world.getSystem(CoordinateSystem)
                 if (entity.getComponent(Alignment)!.value === AlignmentType.WildernessBeast){         
-                    wander(coordSystem, entity, world)
+                    wander(world, entity)
                 }
             })
             turnEntity.removeComponent(TurnEnded)
@@ -32,13 +32,13 @@ export class EnemyMovementSystem extends System {
     }
 }
 
-function wander(coordinateSystem: CoordinateSystem, entity : Entity, world : World){
+function wander(world : World, entity : Entity){
     const movement = entity.getMutableComponent(Movement)!
     for (let index = 0; index < movement.movementPoints; index++) {
         const originalCoordinate = entity.getMutableComponent(Coordinate)!
         const randomOffset = getRandomCoordinate(1)
         const newTargetCoordinate = addCoordinate(originalCoordinate, randomOffset)
-        moveSelectedEntity(coordinateSystem, newTargetCoordinate, entity, world)
+        moveSelectedEntity(world, newTargetCoordinate, entity)
     }
-    console.log("Wandered")
+    //console.log("Wandered")
 }

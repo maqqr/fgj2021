@@ -106,7 +106,7 @@ export class InputSystem extends PersistentSystem<{}> {
                 this.selectEntity(clickedEntity)
             }
             if (alignment.value === AlignmentType.WildernessBeast) {
-                moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity, this.world)
+                moveSelectedEntity(this.world, coordinate, this.selectedEntity)
                 this.unselectEntity(this.selectedEntity)                
             }
         }
@@ -117,7 +117,7 @@ export class InputSystem extends PersistentSystem<{}> {
 
     private handleNoClickedEntity(coordinateSystem: CoordinateSystem, coordinate: Coordinate) {
         if (this.selectedEntity) {
-            moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity, this.world)
+            moveSelectedEntity(this.world, coordinate, this.selectedEntity)
             this.unselectEntity(this.selectedEntity)                
         }
     }
