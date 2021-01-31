@@ -33,12 +33,13 @@ export function initializeEntities(world: World) {
         if (isWorker)
             randomUnit.addComponent(Carriage, { value: null })
     }
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
+        const isBear = i < 300
         const randomUnit = world.createEntity()
         const coord = getRandomFarCoordinate(Radius)
         randomUnit.addComponent(Coordinate, coord)
-        randomUnit.addComponent(Unit, i < 300 ? makeBear() : makeWolf())
-        randomUnit.addComponent(Movement, { movementPoints: 0, movementPointsMaximum: 0 })
+        randomUnit.addComponent(Unit, isBear ? makeBear() : makeWolf())
+        randomUnit.addComponent(Movement, { movementPoints: isBear ? 2 : 3, movementPointsMaximum: isBear ? 2 : 3 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.WildernessBeast })
         randomUnit.addComponent(AnimatedPosition, coordinateToXY(coord))
     }
