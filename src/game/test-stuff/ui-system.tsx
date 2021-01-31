@@ -188,9 +188,10 @@ export class GUITestSystem extends System {
                     const damage = entity.getComponent(DamageTaken)!
                     const cameraFix = { x: pos.x + camera.x, y: pos.y + camera.y }
                     const uiPosition = pixiRenderer.convertToUICoordinates(cameraFix)
+                    const cssColor = damage.value > 0 ? "lightcoral" : "LimeGreen"
                     const textStyle = `z-index:-10; position:fixed; left:${uiPosition.x}px; top:${uiPosition.y}px;`
-                                    + `transform: translate(-50%, -50%); color: lightcoral`
-                    return <span style={textStyle as any}>{`-${Math.floor(damage.value)}`}</span>
+                                    + `transform: translate(-50%, -50%); color: ${cssColor}`
+                    return <span style={textStyle as any}>{`${Math.floor(-damage.value)}`}</span>
                 })
                 }
             </div>

@@ -8,6 +8,7 @@ import { Movement } from './units/movement'
 import { Building } from './tiles/building'
 import { Carriage } from './units/carriage'
 
+// this could cause that some units are spawned outside of the map, not sure
 const UnitSpawnRadius = 4
 
 function getRandomFarCoordinate(radius: number) {
@@ -33,9 +34,9 @@ export function initializeEntities(world: World) {
         if (isWorker)
             randomUnit.addComponent(Carriage, { value: null })
     }
-    const maxEnemies = 100
+    const maxEnemies = 200
     for (let i = 0; i < maxEnemies; i++) {
-        const isBear = i < maxEnemies / 3
+        const isBear = i < maxEnemies / 4
         const randomUnit = world.createEntity()
         const coord = getRandomFarCoordinate(Radius)
         randomUnit.addComponent(Coordinate, coord)

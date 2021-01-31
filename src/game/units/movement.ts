@@ -3,10 +3,10 @@ import { registerComponent } from '../../register-component'
 import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { checkNeighbourCoordinates, pathfind } from '../pathfinding'
-import { Building } from '../tiles/building'
+import { Building, checkForBuildingInteraction } from '../tiles/building'
 import { Resource } from '../tiles/resource'
 import { Alignment, AlignmentType } from './alignment'
-import { Carriage } from './carriage'
+import { Carriage, checkForCarriageInteraction } from './carriage'
 import { checkNeighborsForFight, checkForFight } from './combat'
 import { Unit } from './unit'
 import { getDistance } from '../coordinate-system/omnipotent-coordinates'
@@ -34,7 +34,6 @@ export function moveSelectedEntity(world: World,
     entity: Entity) {
     const coordinateSystem: CoordinateSystem = world.getSystem(CoordinateSystem)
     const tileEntity = coordinateSystem.getTileAt(targetCoordinate)
-    const unitAlignment = entity.getMutableComponent(Alignment)!
     if (tileEntity) {
         const unitCoordinate = entity.getMutableComponent(Coordinate)!
         const movement = entity.getMutableComponent(Movement)
@@ -51,24 +50,12 @@ export function moveSelectedEntity(world: World,
                 //console.log("Neigboring tile passable")
                 stepTo(unitCoordinate, targetCoordinate)
                 movement.movementPoints--
-                const fight = checkNeighborsForFight(coordinateSystem, targetCoordinate, entity)
-                const carriage = entity.getMutableComponent(Carriage)
                 const tileStepped = coordinateSystem.getTileAt(targetCoordinate)!
-                const possibleResource = tileStepped.getComponent(Resource)
-                if (possibleResource) {
-                    if (unitAlignment.value === AlignmentType.WildernessBeast) {
-                        tileStepped.removeComponent(Resource)
-                        //console.log("Nomnom")
-                    } else if (carriage && !carriage.value) {
-                        carriage.value = possibleResource.resource
-                        tileStepped.removeComponent(Resource)
-                    }
-                }
-                const house = tileStepped.getMutableComponent(Building)
-                if (house && carriage && carriage.value) {
-                    house.containedResources++
-                    carriage.value = null
-                }
+                const fightHappened : boolean = checkNeighborsForFight(coordinateSystem, targetCoordinate, entity)
+                // return early from fight so units can block interactions
+                if (fightHappened) return
+                checkForCarriageInteraction(entity, tileStepped)
+                checkForBuildingInteraction(entity, tileStepped, world)
                 return
             }
             else {
@@ -86,6 +73,7 @@ export function moveSelectedEntity(world: World,
         }
         path.splice(0, 1)
 
+        // do pathfinding to target and check stuff on the way
         let step = 0
         while (movement.movementPoints > 0 && step < path.length) {
             if (entity.getComponent(Unit)!.health <= 0) {
@@ -95,30 +83,13 @@ export function moveSelectedEntity(world: World,
             stepTo(unitCoordinate, stepFromPath)
             movement.movementPoints--
             step++
-            if (entity.getComponent(Unit)!.health <= 0) {
-                return true
-            }
             const fightHappened = checkNeighborsForFight(coordinateSystem, stepFromPath, entity)
             if (fightHappened) return
             //checkNeighbourCoordinates(unitCoordinate, )
-
-            const carriage = entity.getMutableComponent(Carriage)
             const tileStepped = coordinateSystem.getTileAt(stepFromPath)!
-            const possibleResource = tileStepped.getComponent(Resource)
-            if (possibleResource) {
-                if (unitAlignment.value === AlignmentType.WildernessBeast) {
-                    tileStepped.removeComponent(Resource)
-                    //console.log("Nomnom")
-                } else if (carriage && !carriage.value) {
-                    carriage.value = possibleResource.resource
-                    tileStepped.removeComponent(Resource)
-                }
-            }
-            const house = tileStepped.getMutableComponent(Building)
-            if (house && carriage && carriage.value) {
-                house.containedResources++
-                carriage.value = null
-            }
+
+            checkForCarriageInteraction(entity, tileStepped)
+            checkForBuildingInteraction(entity, tileStepped, world)
         }
     }
 }

@@ -26,20 +26,24 @@ export class Unit extends Component<Unit> {
 export const getRandomName = () => {
     return useableNames[Math.floor(Math.random() * useableNames.length)]
 }
+const soldierHealth = 70
+const workerHealth = 70
+const wolfHealth = 40
+const bearHealth = 100
 
 export function makeSoldier() {
-    return { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()}`, canBuild: false,
+    return { strength: 12, health: soldierHealth, maxHealth: soldierHealth, name: `${getRandomName()}`, canBuild: false,
              texture: "soldier.png", outOfMovesTexture: "soldier_gray.png" }
 }
 export function makeWorker() {
-    return { strength: 2, health: 30, maxHealth: 70, name: `${getRandomName()}`, canBuild: true,
+    return { strength: 2, health: workerHealth, maxHealth: workerHealth, name: `${getRandomName()}`, canBuild: true,
              texture: "worker.png", outOfMovesTexture: "worker_gray.png" }
 }
 
 export function makeWolf() {
-    return { strength: 8, health: 40, maxHealth: 40, name: "Wolf", texture: "wolf.png" }
+    return { strength: 8, health: wolfHealth, maxHealth: wolfHealth, name: "Wolf", texture: "wolf.png" }
 }
 
 export function makeBear() {
-    return { strength: 12, health: 100, maxHealth: 100, name: "Bear", texture: "bear.png" }
+    return { strength: 12, health: bearHealth, maxHealth: bearHealth, name: "Bear", texture: "bear.png" }
 }
