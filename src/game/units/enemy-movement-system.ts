@@ -27,7 +27,7 @@ export class EnemyMovementSystem extends System {
             })
             turnEntity.removeComponent(TurnEnded)
             turnEntity.addComponent(TurnStarted)
-            console.log("AI movement ended")
+            //console.log("AI movement ended")
         }
     }
 }

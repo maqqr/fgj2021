@@ -58,7 +58,7 @@ export function moveSelectedEntity(world: World,
                 if (possibleResource) {
                     if (unitAlignment.value === AlignmentType.WildernessBeast) {
                         tileStepped.removeComponent(Resource)
-                        console.log("Nomnom")
+                        //console.log("Nomnom")
                     } else if (carriage && !carriage.value) {
                         carriage.value = possibleResource.resource
                         tileStepped.removeComponent(Resource)
@@ -74,7 +74,7 @@ export function moveSelectedEntity(world: World,
             else {
                 const fightHappened = checkForFight(coordinateSystem, targetCoordinate, entity)
                 if (fightHappened) {
-                    console.log("Neigboring fight")
+                    //console.log("Neigboring fight")
                     return
                 }
             }
@@ -108,7 +108,7 @@ export function moveSelectedEntity(world: World,
             if (possibleResource) {
                 if (unitAlignment.value === AlignmentType.WildernessBeast) {
                     tileStepped.removeComponent(Resource)
-                    console.log("Nomnom")
+                    //console.log("Nomnom")
                 } else if (carriage && !carriage.value) {
                     carriage.value = possibleResource.resource
                     tileStepped.removeComponent(Resource)
