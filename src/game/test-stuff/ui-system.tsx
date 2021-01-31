@@ -3,7 +3,7 @@
 import { h, render } from 'petit-dom'
 import { System } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { Camera, Position, Velocity } from '../components'
+import { AnimatedPosition, Camera, Position, Velocity } from '../components'
 import { Player } from './example-components'
 import { RenderSystem } from './render-system'
 import { Game } from '../constants'
@@ -13,7 +13,7 @@ import { Coordinate } from '../coordinate-system/coordinate'
 import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { coordinateToXY, TileWidth, XYToCoordinate } from '../coordinate-system/omnipotent-coordinates'
 import { Movement } from '../units/movement'
-import { Unit } from '../units/unit'
+import { makeSoldier, makeWorker, Unit } from '../units/unit'
 import { Resource, resourceTypeToString } from '../tiles/resource'
 import { Building } from '../tiles/building'
 import { DamageTaken } from '../units/damage-taken'
@@ -29,12 +29,23 @@ class GUITestSystem extends System {
         units: { components: [Coordinate, Unit, Alignment] }
     }
 
-    onSpawnButtonClicked(evt: any) {
-        const rnd = () => (Math.random() - 0.5) * 2.0
+    onSpawnWorker(evt: any) {
         const newEntity = this.world.createEntity()
-        newEntity.addComponent(Position, { x: Game.width / 2, y: Game.height / 2 })
-        newEntity.addComponent(Velocity, { x: rnd() * 60, y: rnd() * 60 })
-        newEntity.addComponent(Player)
+        newEntity.addComponent(Coordinate, {x: 0, y: 0, z: 0})
+        newEntity.addComponent(Unit, makeWorker())
+        newEntity.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
+        newEntity.addComponent(Alignment, { value: AlignmentType.Player })
+        newEntity.addComponent(AnimatedPosition)
+        newEntity.addComponent(Carriage, { value: null })
+    }
+
+    onSpawnSoldier(evt: any) {
+        const newEntity = this.world.createEntity()
+        newEntity.addComponent(Coordinate, {x: 0, y: 0, z: 0})
+        newEntity.addComponent(Unit, makeSoldier())
+        newEntity.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
+        newEntity.addComponent(Alignment, { value: AlignmentType.Player })
+        newEntity.addComponent(AnimatedPosition)
     }
 
     onEndTurnClicked(evt: MouseEvent) {
@@ -154,36 +165,6 @@ class GUITestSystem extends System {
             )
         }
 
-        const uiWindow =
-            <div class="rpgui-container framed" style={windowStyle as any}>
-                <h1>UI Test</h1>
-                <p>Time: {""+time.toFixed(2)}</p>
-                <p>Mouse UI coordinate: ({""+Math.floor(mouse.x)}, {""+Math.floor(mouse.y)})</p>
-                <p>Mouse Game coordinate: ({""+Math.floor(gameMouse.x)}, {""+Math.floor(gameMouse.y)})</p>
-                <hr/>
-                <p>Entities with Player and Position components: {""+this.queries.players.results.length}</p>
-                <div class="rpgui-container framed-grey" style={"overflow-y: scroll; height: 200px" as any}>
-                    <p>List of entities:</p>
-                    <ul class="rpgui-list">
-                        {
-                        this.queries.players.results.map(entity => {
-                            const pos = entity.getComponent(Position)!
-                            return <li>player ({""+Math.floor(pos.x)}, {""+Math.floor(pos.y)})</li>
-                        })
-                        }
-                    </ul>
-                </div>
-                <p>Progress bars:</p>
-                <ProgressBar percentage={progressBarFillPercentage}></ProgressBar>
-                <ProgressBar percentage={100 - progressBarFillPercentage}></ProgressBar>
-
-                <hr/>
-                <div class="rpgui-center">
-                    <button class="rpgui-button" style={"padding: 0px 100px" as any}
-                            onclick={this.onSpawnButtonClicked.bind(this)}>Spawn</button>
-                </div>
-            </div>
-
         const camera = this.world.getSystem(RenderSystem).getCamera()
         const damageTexts =
             <div>
@@ -233,6 +214,20 @@ class GUITestSystem extends System {
                 </span>
             </div>
 
+        const buyButtonStyle = `z-index:-10; position:fixed; right:15px; top:15px;`
+        const buyButton =
+            <div class="rpgui-container" style={buyButtonStyle as any}>
+                <div class="rpgui-center">
+                    <button class="rpgui-button" style={"padding: 0px 30px" as any}
+                        onclick={this.onSpawnWorker.bind(this)}>Buy worker</button>
+                </div>
+
+                <div class="rpgui-center">
+                    <button class="rpgui-button" style={"padding: 0px 30px" as any}
+                        onclick={this.onSpawnSoldier.bind(this)}>Buy soldier</button>
+                </div>
+            </div>
+
         const finalUi =
             <div>
                 {/* {uiWindow} */}
@@ -240,6 +235,7 @@ class GUITestSystem extends System {
                 {damageTexts}
                 {infoWindow}
                 {endTurnButton}
+                {buyButton}
             </div>
 
         const uiContainer = document.getElementById("ui")
