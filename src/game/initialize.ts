@@ -16,10 +16,20 @@ const getRandomName = () => {
 }
 
 function makeSoldier() {
-    return { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()}`, canBuild: false }
+    return { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()}`, canBuild: false,
+             texture: "soldier.png", outOfMovesTexture: "soldier_gray.png" }
 }
 function makeWorker() {
-    return { strength: 2, health: 30, maxHealth: 70, name: `${getRandomName()}`, canBuild: true }
+    return { strength: 2, health: 30, maxHealth: 70, name: `${getRandomName()}`, canBuild: true,
+             texture: "worker.png", outOfMovesTexture: "worker_gray.png" }
+}
+
+function makeWolf() {
+    return { strength: 8, health: 40, maxHealth: 40, name: "Wolf", texture: "wolf.png" }
+}
+
+function makeBear() {
+    return { strength: 12, health: 100, maxHealth: 40, name: "Bear", texture: "bear.png" }
 }
 
 export function initializeEntities(world: World) {
@@ -39,7 +49,7 @@ export function initializeEntities(world: World) {
         const randomUnit = world.createEntity()
         const coord = getRandomCoordinate(Radius)
         randomUnit.addComponent(Coordinate, coord)
-        randomUnit.addComponent(Unit, { strength: 12, health: 40, maxHealth: 40, name: "Wolf" })
+        randomUnit.addComponent(Unit, i < 300 ? makeBear() : makeWolf())
         randomUnit.addComponent(Movement, { movementPoints: 0, movementPointsMaximum: 0 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.WildernessBeast })
         randomUnit.addComponent(AnimatedPosition, coordinateToXY(coord))

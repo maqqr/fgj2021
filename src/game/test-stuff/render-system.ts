@@ -184,24 +184,12 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
 
             const unit = entity.getComponent(Unit)!
             const alignment = entity.getComponent(Alignment)
-            let sprite
-            switch (alignment?.value) {
-                case AlignmentType.Player:
-                    const movement = entity.getComponent(Movement)
-                    const gray = movement && movement.movementPoints === 0 ? "_gray" : ""
-                    if (unit.canBuild) {
-                        sprite = `worker${gray}.png`
-                    }
-                    else {
-                        sprite = `soldier${gray}.png`
-                    }
-                    break
-                case AlignmentType.WildernessBeast:
-                    sprite = "wolf.png"
-                    break
-                default:
-                    sprite = "error.png"
-                    break
+            let sprite = unit.texture
+            if (alignment?.value === AlignmentType.Player) {
+                const movement = entity.getComponent(Movement)
+                if (movement && movement.movementPoints === 0) {
+                    sprite = unit.outOfMovesTexture
+                }
             }
             this.state.renderer.drawTexture(pos.x - tileHeight / 2, pos.y - tileHeight / 2,
                 sprite, tileHeight, tileHeight)
