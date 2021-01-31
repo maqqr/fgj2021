@@ -98,6 +98,10 @@ export class InputSystem extends PersistentSystem<{}> {
         }
         const alignment = clickedEntity.getComponent(Alignment)!
         if (this.selectedEntity) {
+
+            if (alignment.value === AlignmentType.Player && this.selectedEntity === clickedEntity){
+                this.unselectEntity(this.selectedEntity)
+            }
             if (alignment.value === AlignmentType.Player && this.selectedEntity !== clickedEntity) {
                 this.unselectEntity(this.selectedEntity)
                 this.selectEntity(clickedEntity)
