@@ -41,5 +41,5 @@ export function makeWolf() {
 }
 
 export function makeBear() {
-    return { strength: 12, health: 100, maxHealth: 40, name: "Bear", texture: "bear.png" }
+    return { strength: 12, health: 100, maxHealth: 100, name: "Bear", texture: "bear.png" }
 }

@@ -86,7 +86,8 @@ export class GUITestSystem extends System {
         const mouseHex = XYToCoordinate(mouse.x - camera.x, mouse.y - camera.y, TileWidth)
 
         const infoWindowUiPos = pixiRenderer.convertToUICoordinates({x: 10, y: 10 })
-        const infoWindowStyle = `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+        const infoWindowStyle = `left:30px; bottom:30px; width:${viewportRect.width*0.3}px`
+
         // if (mouse.x < Game.width * 0.4) {
         //     infoWindowStyle =
         //       `right:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
@@ -95,6 +96,22 @@ export class GUITestSystem extends System {
         //     infoWindowStyle =
         //       `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
         // }
+
+        const ProgressBar = (props: { percentage: number }) => {
+            return (
+                <div class="rpgui-progress">
+                    <div class="rpgui-progress-track">
+                        <div class="rpgui-progress-track">
+                            <div class="rpgui-progress-fill red"
+                                 style={"left: 0px; width: "+props.percentage+"%;" as any}>
+                            </div>
+                        </div>
+                        <div class="rpgui-progress-left-edge"></div>
+                        <div class="rpgui-progress-right-edge"></div>
+                    </div>
+                </div>
+            )
+        }
 
         const allInfos: any = []
 
@@ -107,6 +124,7 @@ export class GUITestSystem extends System {
             allInfos.push(
                 <div>
                     <h1>{unit.name}</h1>
+                    <ProgressBar percentage={Math.floor((unit.health / unit.maxHealth) * 100)}></ProgressBar>
                     <p>Health: {""+Math.floor(unit.health)} / {""+Math.floor(unit.maxHealth)}</p>
                     <p>Strength: {""+unit.strength}</p>
                     <p>Movement: {""+movement.movementPoints} / {""+movement.movementPointsMaximum}</p>
@@ -159,32 +177,7 @@ export class GUITestSystem extends System {
     }
 
     execute(deltaTime: number, time: number) {
-        const progressBarFillPercentage = Math.floor(((Math.sin(time) * 0.5) + 0.5) * 100)
-
         const pixiRenderer = this.world.getSystem(RenderSystem).getRenderer()
-        const mouse = pixiRenderer.getMouseUiPosition()
-        const gameMouse = pixiRenderer.convertToGameCoordinates(mouse)
-
-        const viewportRect = pixiRenderer.getViewportRect()
-        const windowUiPos = pixiRenderer.convertToUICoordinates({x: 10, y: 10 })
-        const windowStyle = `left:${windowUiPos.x}px; top:${windowUiPos.y}px; width:${viewportRect.width*0.5}px`
-
-        // Reusable UI component. Works just like React Functional Components.
-        const ProgressBar = (props: { percentage: number }) => {
-            return (
-                <div class="rpgui-progress">
-                    <div class="rpgui-progress-track">
-                        <div class="rpgui-progress-track">
-                            <div class="rpgui-progress-fill red"
-                                 style={"left: 0px; width: "+props.percentage+"%;" as any}>
-                            </div>
-                        </div>
-                        <div class="rpgui-progress-left-edge"></div>
-                        <div class="rpgui-progress-right-edge"></div>
-                    </div>
-                </div>
-            )
-        }
 
         const camera = this.world.getSystem(RenderSystem).getCamera()
         const damageTexts =
@@ -228,7 +221,7 @@ export class GUITestSystem extends System {
 
         const endTurnStyle = `z-index:-10; position:fixed; right:15px; bottom:15px;`
         const endTurnButton =
-            <div class="rpgui-container framed framed-grey" style={endTurnStyle as any} onclick={
+            <div class="rpgui-container framed framed-golden" style={endTurnStyle as any} onclick={
                 (evt: MouseEvent) => this.onEndTurnClicked(evt)}>
                 <span>
                     End turn
@@ -239,12 +232,14 @@ export class GUITestSystem extends System {
         const buyButton =
             <div class="rpgui-container" style={buyButtonStyle as any}>
                 <div class="rpgui-center">
-                    <button class="rpgui-button" disabled={!this.canBuyUnit()} style={"padding: 0px 30px" as any}
+                    <button class="rpgui-button" disabled={!this.canBuyUnit()}
+                        style={"padding: 0px 30px; width: 250px" as any}
                         onclick={this.onSpawnWorker.bind(this)}>Buy worker</button>
                 </div>
 
                 <div class="rpgui-center">
-                    <button class="rpgui-button" disabled={!this.canBuyUnit()} style={"padding: 0px 30px" as any}
+                    <button class="rpgui-button" disabled={!this.canBuyUnit()}
+                        style={"padding: 0px 30px; width: 250px" as any}
                         onclick={this.onSpawnSoldier.bind(this)}>Buy soldier</button>
                 </div>
             </div>
