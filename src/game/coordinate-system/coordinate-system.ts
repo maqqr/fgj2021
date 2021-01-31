@@ -23,7 +23,6 @@ export class CoordinateSystem extends System {
     }
 
     private positionHash(coord: Coordinate): string {
-        // return coordinateHash(coord)
         return "" + coord.x + "," + coord.y + "," + coord.z
     }
 
