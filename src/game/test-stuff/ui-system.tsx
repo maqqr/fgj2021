@@ -29,23 +29,44 @@ export class GUITestSystem extends System {
         units: { components: [Coordinate, Unit, Alignment] }
     }
 
+    canBuyUnit(): boolean {
+        const originTile = this.world.getSystem(CoordinateSystem).getTileAt(new Coordinate({x: 0, y: 0, z: 0}))
+        const building = originTile?.getMutableComponent(Building)
+        return building !== undefined && building.containedResources > 0
+    }
+
+    buyUnit() {
+        const originTile = this.world.getSystem(CoordinateSystem).getTileAt(new Coordinate({x: 0, y: 0, z: 0}))
+        const building = originTile?.getMutableComponent(Building)
+
+        if (building && building.containedResources > 0) {
+            building.containedResources--
+        }
+    }
+
     onSpawnWorker(evt: any) {
-        const newEntity = this.world.createEntity()
-        newEntity.addComponent(Coordinate, {x: 0, y: 0, z: 0})
-        newEntity.addComponent(Unit, makeWorker())
-        newEntity.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
-        newEntity.addComponent(Alignment, { value: AlignmentType.Player })
-        newEntity.addComponent(AnimatedPosition)
-        newEntity.addComponent(Carriage, { value: null })
+        if (this.canBuyUnit()) {
+            this.buyUnit()
+            const newEntity = this.world.createEntity()
+            newEntity.addComponent(Coordinate, {x: 0, y: 0, z: 0})
+            newEntity.addComponent(Unit, makeWorker())
+            newEntity.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
+            newEntity.addComponent(Alignment, { value: AlignmentType.Player })
+            newEntity.addComponent(AnimatedPosition)
+            newEntity.addComponent(Carriage, { value: null })
+        }
     }
 
     onSpawnSoldier(evt: any) {
-        const newEntity = this.world.createEntity()
-        newEntity.addComponent(Coordinate, {x: 0, y: 0, z: 0})
-        newEntity.addComponent(Unit, makeSoldier())
-        newEntity.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
-        newEntity.addComponent(Alignment, { value: AlignmentType.Player })
-        newEntity.addComponent(AnimatedPosition)
+        if (this.canBuyUnit()) {
+            this.buyUnit()
+            const newEntity = this.world.createEntity()
+            newEntity.addComponent(Coordinate, {x: 0, y: 0, z: 0})
+            newEntity.addComponent(Unit, makeSoldier())
+            newEntity.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
+            newEntity.addComponent(Alignment, { value: AlignmentType.Player })
+            newEntity.addComponent(AnimatedPosition)
+        }
     }
 
     onEndTurnClicked(evt: MouseEvent) {
@@ -218,12 +239,12 @@ export class GUITestSystem extends System {
         const buyButton =
             <div class="rpgui-container" style={buyButtonStyle as any}>
                 <div class="rpgui-center">
-                    <button class="rpgui-button" style={"padding: 0px 30px" as any}
+                    <button class="rpgui-button" disabled={!this.canBuyUnit()} style={"padding: 0px 30px" as any}
                         onclick={this.onSpawnWorker.bind(this)}>Buy worker</button>
                 </div>
 
                 <div class="rpgui-center">
-                    <button class="rpgui-button" style={"padding: 0px 30px" as any}
+                    <button class="rpgui-button" disabled={!this.canBuyUnit()} style={"padding: 0px 30px" as any}
                         onclick={this.onSpawnSoldier.bind(this)}>Buy soldier</button>
                 </div>
             </div>
