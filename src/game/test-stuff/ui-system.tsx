@@ -21,7 +21,7 @@ import { Carriage } from '../units/carriage'
 import { Alignment, AlignmentType } from '../units/alignment'
 
 @registerWithPriority(4)
-class GUITestSystem extends System {
+export class GUITestSystem extends System {
     static queries = {
         players: { components: [Player, Position] },
         withPosition: { components: [Position] },
