@@ -191,7 +191,7 @@ export class GUITestSystem extends System {
                     const cssColor = damage.value > 0 ? "lightcoral" : "LimeGreen"
                     const textStyle = `z-index:-10; position:fixed; left:${uiPosition.x}px; top:${uiPosition.y}px;`
                                     + `transform: translate(-50%, -50%); color: ${cssColor}`
-                    return <span style={textStyle as any}>{`${Math.floor(-damage.value)}`}</span>
+                    return <span style={textStyle as any}>{`${Math.abs(Math.floor(damage.value))}`}</span>
                 })
                 }
             </div>
