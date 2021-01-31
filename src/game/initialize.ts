@@ -33,8 +33,9 @@ export function initializeEntities(world: World) {
         if (isWorker)
             randomUnit.addComponent(Carriage, { value: null })
     }
-    for (let i = 0; i < 100; i++) {
-        const isBear = i < 300
+    const maxEnemies = 100
+    for (let i = 0; i < maxEnemies; i++) {
+        const isBear = i < maxEnemies / 3
         const randomUnit = world.createEntity()
         const coord = getRandomFarCoordinate(Radius)
         randomUnit.addComponent(Coordinate, coord)
