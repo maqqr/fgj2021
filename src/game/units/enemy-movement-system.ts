@@ -5,7 +5,7 @@ import { TurnEntityName } from '../turns/turn-system'
 import { Alignment, AlignmentType } from './alignment'
 import { Movement } from './movement'
 
-@registerWithPriority(80)
+@registerWithPriority(3)
 export class EnemyMovementSystem extends System {
     static queries = {
         units: { components: [Movement], alignment: [Alignment] },
@@ -17,13 +17,12 @@ export class EnemyMovementSystem extends System {
         if (turnEntity?.getComponent(TurnEnded)) {
             this.queries.units.results.forEach(entity => {
                 //const movement = entity.getMutableComponent(Movement)!
-                if (entity.getComponent(Alignment)!.value === AlignmentType.WildernessBeast){
-                    console.log("wildubeast")
-                    
+                if (entity.getComponent(Alignment)!.value === AlignmentType.WildernessBeast){                    
                 }
             })
             turnEntity.removeComponent(TurnEnded)
             turnEntity.addComponent(TurnStarted)
+            console.log("AI movement ended")
         }
     }
 }

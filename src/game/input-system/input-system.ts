@@ -21,7 +21,7 @@ export class InputSystem extends PersistentSystem<{}> {
     static queries = {
     }
     renderer: RenderSystem
-    moveDirection: any = {x: 0, y: 0}
+    moveDirection: any = { x: 0, y: 0 }
     cameraSpeed = 100
     selectedEntity: Entity | null = null
 
@@ -55,7 +55,7 @@ export class InputSystem extends PersistentSystem<{}> {
     }
 
     handleKeyPress = (evt: KeyboardEvent) => {
-        const direction = {x: 0, y: 0}
+        const direction = { x: 0, y: 0 }
         const code = evt.keyCode
         const moveSpeed = 3
         if (code === 38) {
@@ -99,10 +99,9 @@ export class InputSystem extends PersistentSystem<{}> {
         const alignment = clickedEntity.getComponent(Alignment)!
         if (this.selectedEntity) {
 
-            if (alignment.value === AlignmentType.Player && this.selectedEntity === clickedEntity){
+            if (alignment.value === AlignmentType.Player && this.selectedEntity === clickedEntity) {
                 this.unselectEntity(this.selectedEntity)
-            }
-            if (alignment.value === AlignmentType.Player && this.selectedEntity !== clickedEntity) {
+            } else if (alignment.value === AlignmentType.Player && this.selectedEntity !== clickedEntity) {
                 this.unselectEntity(this.selectedEntity)
                 this.selectEntity(clickedEntity)
             }
@@ -110,7 +109,7 @@ export class InputSystem extends PersistentSystem<{}> {
                 this.moveSelectedEntity(coordinateSystem, coordinate, this.selectedEntity)
             }
         }
-        else if (clickedEntity ) {
+        else if (clickedEntity) {
             this.lookForEntity(clickedEntity, coordinateSystem, coordinate, alignment.value)
         }
     }
@@ -136,7 +135,7 @@ export class InputSystem extends PersistentSystem<{}> {
             const passableCallback = coordSystem.isPassable.bind(coordSystem)
 
             const path = pathfind(unitCoordinate, coordinate, passableCallback)
-            if (!path || path.length === 0){
+            if (!path || path.length === 0) {
                 return
             }
             path.splice(0, 1)
@@ -171,7 +170,7 @@ export class InputSystem extends PersistentSystem<{}> {
 
                 const carriage = entity.getMutableComponent(Carriage)
                 const tileStepped = coordinateSystem.getTileAt(stepFromPath)!
-                if (carriage && !carriage.value){
+                if (carriage && !carriage.value) {
                     const possibleResource = tileStepped.getComponent(Resource)
                     if (possibleResource) {
                         carriage.value = possibleResource.resource
@@ -212,7 +211,7 @@ export class InputSystem extends PersistentSystem<{}> {
 
     private lookForEntity(
         entity: Entity, coordinateSystem: CoordinateSystem, coordinate: Coordinate, alignment: AlignmentType) {
-        if(alignment === AlignmentType.Player) {
+        if (alignment === AlignmentType.Player) {
             if (!entity.getComponent(Selected)) {
                 this.selectEntity(entity)
             } else {
