@@ -1,6 +1,6 @@
 import { Not, Entity, System, SystemQueries, ComponentConstructor, NotComponent } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { TurnCount, TurnEndOrder, TurnStarted } from './turn-count'
+import { TurnCount, TurnEnded, TurnEndOrder, TurnStarted } from './turn-count'
 
 export const TurnEntityName = 'turnBuoy'
 
@@ -30,7 +30,8 @@ export class TurnSystem extends System {
             turnCount.value++
 
             entity.removeComponent(TurnEndOrder)
-            entity.addComponent(TurnStarted)
+            entity.addComponent(TurnEnded)
+            //console.log("Penis")
         })
     }
 }

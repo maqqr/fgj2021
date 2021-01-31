@@ -10,6 +10,7 @@ import './test-stuff/ui-system'
 import './coordinate-system/coordinate-system'
 import './fog-of-war/fow-system'
 import { DamageTaken } from './units/damage-taken'
+import './units/enemy-movement-system'
 
 export function registerSystems(world: World): void {
     // Register all @registerWithPriority systems
