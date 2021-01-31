@@ -15,14 +15,21 @@ const getRandomName = () => {
     return useableNames[Math.floor(Math.random() * useableNames.length)]
 }
 
+function makeSoldier() {
+    return { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()}`, canBuild: false }
+}
+function makeWorker() {
+    return { strength: 2, health: 30, maxHealth: 70, name: `${getRandomName()}`, canBuild: true }
+}
+
 export function initializeEntities(world: World) {
     initializeCoordinates(world)
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
         const randomUnit = world.createEntity()
         const coord = getRandomCoordinate(UnitSpawnRadius)
         randomUnit.addComponent(Coordinate, coord)
-        randomUnit.addComponent(Unit, { strength: 12, health: 70, maxHealth: 70, name: `${getRandomName()}` })
+        randomUnit.addComponent(Unit, i <= 1 ? makeWorker() : makeSoldier())
         randomUnit.addComponent(Movement, { movementPoints: 3, movementPointsMaximum: 3 })
         randomUnit.addComponent(Alignment, { value: AlignmentType.Player })
         randomUnit.addComponent(AnimatedPosition, coordinateToXY(coord))
