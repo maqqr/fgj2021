@@ -16,6 +16,26 @@ import { Resource } from '../tiles/resource'
 import { Carriage } from '../units/carriage'
 import { Building } from '../tiles/building'
 
+enum InputKey{
+    Up,
+    Down,
+    Left,
+    Right
+}
+// because of coordinate hijinks, these are actually like 90 degrees
+const InputKeyCodes = new Map<number, InputKey>([
+    [38, InputKey.Left],
+    [40, InputKey.Right],
+    [37, InputKey.Up],
+    [39, InputKey.Down],
+
+    [87, InputKey.Left],
+    [83, InputKey.Right],
+    [65, InputKey.Up],
+    [68, InputKey.Down],
+  ])
+
+
 @registerWithPriority(92)
 export class InputSystem extends PersistentSystem<{}> {
     static queries = {
@@ -55,29 +75,35 @@ export class InputSystem extends PersistentSystem<{}> {
     }
 
     handleKeyPress = (evt: KeyboardEvent) => {
-        const direction = { x: 0, y: 0 }
+        //const direction = { x: 0, y: 0 }
         const code = evt.keyCode
         const moveSpeed = 3
-        if (code === 38) {
+        const inputMeaning = InputKeyCodes.get(code)
+
+
+        // this could be normalized
+
+        if (inputMeaning === InputKey.Left) {
             this.moveDirection.y = moveSpeed
         }
-        else if (code === 40) {
+        else if (inputMeaning === InputKey.Right) {
             this.moveDirection.y = -moveSpeed
         }
-        if (code === 37) {
+        if (inputMeaning === InputKey.Up) {
             this.moveDirection.x = moveSpeed
         }
-        else if (code === 39) {
+        else if (inputMeaning === InputKey.Down) {
             this.moveDirection.x = -moveSpeed
         }
     }
 
     resetKeyPress = (evt: KeyboardEvent) => {
         const code = evt.keyCode
-        if (code === 38 || code === 40) {
+        const inputMeaning = InputKeyCodes.get(code)
+        if (inputMeaning !== InputKey.Down && inputMeaning !== InputKey.Up) {
             this.moveDirection.y = 0
         }
-        if (code === 37 || code === 39) {
+        if (inputMeaning !== InputKey.Left && inputMeaning !== InputKey.Right) {
             this.moveDirection.x = 0
         }
     }
