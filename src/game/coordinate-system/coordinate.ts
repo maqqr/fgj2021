@@ -17,6 +17,10 @@ export class Coordinate extends Component<Coordinate> {
     }
 }
 
+export function addCoordinate(a: Coordinate, b: Coordinate) : Coordinate{
+    return new Coordinate({x : a.x + b.x, y : a.y + b.y, z: a.z + b.z})
+}
+
 function convertToPositive(a: number): number {
     return a >= 0 ? a * 2 : -a * 2 - 1
 }
