@@ -5,7 +5,7 @@ import { TurnEntityName } from '../turns/turn-system'
 import { Alignment, AlignmentType } from './alignment'
 import { Movement } from './movement'
 
-@registerWithPriority(80)
+@registerWithPriority(3)
 export class EnemyMovementSystem extends System {
     static queries = {
         units: { components: [Movement], alignment: [Alignment] },
