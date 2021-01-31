@@ -7,8 +7,9 @@ import { Building } from '../tiles/building'
 import { Resource } from '../tiles/resource'
 import { Alignment } from './alignment'
 import { Carriage } from './carriage'
-import { fight, createDamageIndicators } from './combat'
+import { checkNeighborsForFight, checkForFight } from './combat'
 import { Unit } from './unit'
+import { getDistance } from '../coordinate-system/omnipotent-coordinates'
 
 @registerComponent
 export class Movement extends Component<Movement> {
@@ -21,12 +22,19 @@ export class Movement extends Component<Movement> {
     }
 }
 
-export function moveSelectedEntity(coordinateSystem: CoordinateSystem,
-    coordinate: Coordinate,
-    entity: Entity,
-    world: World) {
-    const moverAlignment = entity.getComponent(Alignment)!
-    const tileEntity = coordinateSystem.getTileAt(coordinate)
+// maybe a bit redundant
+function stepTo(stepperCoordinate : Coordinate, targetCoordinate : Coordinate){
+    stepperCoordinate.x = targetCoordinate.x
+    stepperCoordinate.y = targetCoordinate.y
+    stepperCoordinate.z = targetCoordinate.z
+}
+
+export function moveSelectedEntity(world: World,
+    targetCoordinate: Coordinate,
+    entity: Entity) {
+    const coordinateSystem: CoordinateSystem = world.getSystem(CoordinateSystem)
+    const tileEntity = coordinateSystem.getTileAt(targetCoordinate)
+    const unityAlignment = entity.getMutableComponent(Alignment)!
     if (tileEntity) {
         const unitCoordinate = entity.getMutableComponent(Coordinate)!
         const movement = entity.getMutableComponent(Movement)
@@ -35,8 +43,27 @@ export function moveSelectedEntity(coordinateSystem: CoordinateSystem,
         }
         //const coordSystem = this.world.getSystem(CoordinateSystem)
         const passableCallback = coordinateSystem.isPassable.bind(coordinateSystem)
+        const isNeighboringCoordinate = getDistance(targetCoordinate, unitCoordinate) === 1
 
-        const path = pathfind(unitCoordinate, coordinate, passableCallback)
+        // special case for 1 length steps
+        if (isNeighboringCoordinate) {
+            if (coordinateSystem.isPassable(targetCoordinate)) {
+                //console.log("Neigboring tile passable")
+                stepTo(unitCoordinate, targetCoordinate)
+                movement.movementPoints--
+                const fight = checkNeighborsForFight(coordinateSystem, targetCoordinate, entity)
+                return
+            }
+            else {
+                const fightHappened = checkForFight(coordinateSystem, targetCoordinate, entity)
+                if (fightHappened){
+                    console.log("Neigboring fight")
+                    return
+                } 
+            }
+        }
+
+        const path = pathfind(unitCoordinate, targetCoordinate, passableCallback)
         if (!path || path.length === 0) {
             return
         }
@@ -48,28 +75,15 @@ export function moveSelectedEntity(coordinateSystem: CoordinateSystem,
                 return
             }
             const stepFromPath = path[step]
-            unitCoordinate.x = stepFromPath.x
-            unitCoordinate.y = stepFromPath.y
-            unitCoordinate.z = stepFromPath.z
+            stepTo(unitCoordinate, stepFromPath)
             movement.movementPoints--
             step++
-            const fightNearby = (fightCoordinate: Coordinate) => {
-                if (entity.getComponent(Unit)!.health <= 0) {
-                    return true
-                }
-                const possibleTarget = coordinateSystem.getUnitAt(fightCoordinate)
-                if (possibleTarget && possibleTarget.getComponent(Alignment)?.value !== moverAlignment.value) {
-                    const damageinfo = fight(entity, possibleTarget)
-                    createDamageIndicators(world, damageinfo)
-                    movement.movementPoints = 0
-                    return true
-                }
-                return true
-            }
             if (entity.getComponent(Unit)!.health <= 0) {
                 return true
             }
-            checkNeighbourCoordinates(unitCoordinate, fightNearby)
+            const fightHappened = checkNeighborsForFight(coordinateSystem, stepFromPath, entity)
+            if (fightHappened) return
+            //checkNeighbourCoordinates(unitCoordinate, )
 
             const carriage = entity.getMutableComponent(Carriage)
             const tileStepped = coordinateSystem.getTileAt(stepFromPath)!
