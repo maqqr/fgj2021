@@ -1,6 +1,5 @@
 import { Not, Entity, System, SystemQueries, ComponentConstructor, NotComponent } from 'ecsy'
 import { registerWithPriority } from '../../register-system'
-import { Coordinate } from '../coordinate-system/coordinate'
 import { TurnCount, TurnEndOrder, TurnStarted, TurnEnded } from '../turns/turn-count'
 import { TurnEntityName } from '../turns/turn-system'
 import { Alignment, AlignmentType } from './alignment'
@@ -9,7 +8,7 @@ import { Movement } from './movement'
 @registerWithPriority(80)
 export class EnemyMovementSystem extends System {
     static queries = {
-        units: { components: [Movement], alignment: [Alignment], coordinate: [Coordinate] },
+        units: { components: [Movement], alignment: [Alignment] },
     }
 
     execute(delta: number, time: number): void {
@@ -17,10 +16,10 @@ export class EnemyMovementSystem extends System {
 
         if (turnEntity?.getComponent(TurnEnded)) {
             this.queries.units.results.forEach(entity => {
+                //const movement = entity.getMutableComponent(Movement)!
                 if (entity.getComponent(Alignment)!.value === AlignmentType.WildernessBeast){
-                    //let position = entity.getMutableComponent(Coordinate)!
-                    //position.x + 1
-                    //console.log("pos" + position.x)
+                    console.log("wildubeast")
+                    
                 }
             })
             turnEntity.removeComponent(TurnEnded)
