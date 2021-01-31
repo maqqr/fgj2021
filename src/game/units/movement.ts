@@ -5,7 +5,7 @@ import { CoordinateSystem } from '../coordinate-system/coordinate-system'
 import { checkNeighbourCoordinates, pathfind } from '../pathfinding'
 import { Building } from '../tiles/building'
 import { Resource } from '../tiles/resource'
-import { Alignment } from './alignment'
+import { Alignment, AlignmentType } from './alignment'
 import { Carriage } from './carriage'
 import { checkNeighborsForFight, checkForFight } from './combat'
 import { Unit } from './unit'
@@ -23,7 +23,7 @@ export class Movement extends Component<Movement> {
 }
 
 // maybe a bit redundant
-function stepTo(stepperCoordinate : Coordinate, targetCoordinate : Coordinate){
+function stepTo(stepperCoordinate: Coordinate, targetCoordinate: Coordinate) {
     stepperCoordinate.x = targetCoordinate.x
     stepperCoordinate.y = targetCoordinate.y
     stepperCoordinate.z = targetCoordinate.z
@@ -34,7 +34,7 @@ export function moveSelectedEntity(world: World,
     entity: Entity) {
     const coordinateSystem: CoordinateSystem = world.getSystem(CoordinateSystem)
     const tileEntity = coordinateSystem.getTileAt(targetCoordinate)
-    const unityAlignment = entity.getMutableComponent(Alignment)!
+    const unitAlignment = entity.getMutableComponent(Alignment)!
     if (tileEntity) {
         const unitCoordinate = entity.getMutableComponent(Coordinate)!
         const movement = entity.getMutableComponent(Movement)
@@ -52,14 +52,31 @@ export function moveSelectedEntity(world: World,
                 stepTo(unitCoordinate, targetCoordinate)
                 movement.movementPoints--
                 const fight = checkNeighborsForFight(coordinateSystem, targetCoordinate, entity)
+                const carriage = entity.getMutableComponent(Carriage)
+                const tileStepped = coordinateSystem.getTileAt(targetCoordinate)!
+                const possibleResource = tileStepped.getComponent(Resource)
+                if (possibleResource) {
+                    if (unitAlignment.value === AlignmentType.WildernessBeast) {
+                        tileStepped.removeComponent(Resource)
+                        //console.log("Nomnom")
+                    } else if (carriage && !carriage.value) {
+                        carriage.value = possibleResource.resource
+                        tileStepped.removeComponent(Resource)
+                    }
+                }
+                const house = tileStepped.getMutableComponent(Building)
+                if (house && carriage && carriage.value) {
+                    house.containedResources++
+                    carriage.value = null
+                }
                 return
             }
             else {
                 const fightHappened = checkForFight(coordinateSystem, targetCoordinate, entity)
-                if (fightHappened){
-                    console.log("Neigboring fight")
+                if (fightHappened) {
+                    //console.log("Neigboring fight")
                     return
-                } 
+                }
             }
         }
 
@@ -87,9 +104,12 @@ export function moveSelectedEntity(world: World,
 
             const carriage = entity.getMutableComponent(Carriage)
             const tileStepped = coordinateSystem.getTileAt(stepFromPath)!
-            if (carriage && !carriage.value) {
-                const possibleResource = tileStepped.getComponent(Resource)
-                if (possibleResource) {
+            const possibleResource = tileStepped.getComponent(Resource)
+            if (possibleResource) {
+                if (unitAlignment.value === AlignmentType.WildernessBeast) {
+                    tileStepped.removeComponent(Resource)
+                    //console.log("Nomnom")
+                } else if (carriage && !carriage.value) {
                     carriage.value = possibleResource.resource
                     tileStepped.removeComponent(Resource)
                 }
