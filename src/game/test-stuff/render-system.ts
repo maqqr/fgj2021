@@ -231,10 +231,11 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
         this.state.renderer.clear()
         this.state.renderer.setCameraOffset(camera)
 
-        const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
-        if (!(turnEntity?.getComponent(TurnStarted))){
-            this.renderObjects(camera)
-        }
+        // const turnEntity = this.world.entityManager.getEntityByName(TurnEntityName)
+        // if (!(turnEntity?.getComponent(TurnStarted))){
+        //     this.renderObjects(camera)
+        // }
+        this.renderObjects(camera)
 
         this.state.renderer.render()
     }
