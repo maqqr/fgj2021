@@ -54,17 +54,18 @@ export class InputSystem extends PersistentSystem<{}> {
     handleKeyPress = (evt: KeyboardEvent) => {
         const direction = {x: 0, y: 0}
         const code = evt.keyCode
+        const moveSpeed = 3
         if (code === 38) {
-            this.moveDirection.y = 1
+            this.moveDirection.y = moveSpeed
         }
         else if (code === 40) {
-            this.moveDirection.y = -1
+            this.moveDirection.y = -moveSpeed
         }
         if (code === 37) {
-            this.moveDirection.x = 1
+            this.moveDirection.x = moveSpeed
         }
         else if (code === 39) {
-            this.moveDirection.x = -1
+            this.moveDirection.x = -moveSpeed
         }
     }
 

@@ -1,6 +1,6 @@
 import { World } from 'ecsy'
 import { AnimatedPosition, Camera, Position } from './components'
-import { coordinateToXY, getRandomCoordinate, initializeCoordinates, Radius } from '../game/coordinate-system/omnipotent-coordinates'
+import { coordinateToXY, getDistance, getRandomCoordinate, initializeCoordinates, Radius } from '../game/coordinate-system/omnipotent-coordinates'
 import { Coordinate } from './coordinate-system/coordinate'
 import { randomizeStrength, Unit } from './units/unit'
 import { Alignment, AlignmentType } from './units/alignment'
@@ -32,6 +32,14 @@ function makeBear() {
     return { strength: 12, health: 100, maxHealth: 40, name: "Bear", texture: "bear.png" }
 }
 
+function getRandomFarCoordinate(radius: number) {
+    let coord = getRandomCoordinate(radius)
+    while (getDistance({x:0,y:0,z:0}, coord) < UnitSpawnRadius + 2) {
+        coord = getRandomCoordinate(radius)
+    }
+    return coord
+}
+
 export function initializeEntities(world: World) {
     initializeCoordinates(world)
 
@@ -47,7 +55,7 @@ export function initializeEntities(world: World) {
     }
     for (let i = 0; i < 1000; i++) {
         const randomUnit = world.createEntity()
-        const coord = getRandomCoordinate(Radius)
+        const coord = getRandomFarCoordinate(Radius)
         randomUnit.addComponent(Coordinate, coord)
         randomUnit.addComponent(Unit, i < 300 ? makeBear() : makeWolf())
         randomUnit.addComponent(Movement, { movementPoints: 0, movementPointsMaximum: 0 })

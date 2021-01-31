@@ -5,7 +5,7 @@ import { Tile, TileType, tileTypeVariationAmount } from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
 import { Building } from "../tiles/building"
 
-export const TileWidth = 50
+export const TileWidth = 60
 export const Radius = 50
 
 const typeWeights = [

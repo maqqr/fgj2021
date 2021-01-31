@@ -54,13 +54,15 @@ class GUITestSystem extends System {
         const mouseHex = XYToCoordinate(mouse.x - camera.x, mouse.y - camera.y, TileWidth)
 
         const infoWindowUiPos = pixiRenderer.convertToUICoordinates({x: 10, y: 10 })
-        let infoWindowStyle
-        if (mouse.x < Game.width * 0.4) {
-            infoWindowStyle = `right:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
-        }
-        else {
-            infoWindowStyle = `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
-        }
+        const infoWindowStyle = `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+        // if (mouse.x < Game.width * 0.4) {
+        //     infoWindowStyle =
+        //       `right:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+        // }
+        // else {
+        //     infoWindowStyle =
+        //       `left:${infoWindowUiPos.x}px; bottom:${infoWindowUiPos.y}px; width:${viewportRect.width*0.3}px`
+        // }
 
         const allInfos: any = []
 
