@@ -1,6 +1,10 @@
 FGJ 2021
 ========
 
+[Play on itch.io](https://h-cap.itch.io/sustencance-lost-in-lapland)
+
+![screenshot](screenshot.jpg)
+
 Development
 -----------
 
