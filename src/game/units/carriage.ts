@@ -14,7 +14,7 @@ export class Carriage extends Component<Carriage> {
     }
 }
 
-export function checkForCarriageInteraction(entity : Entity, tile : Entity){
+export function checkForCarriageInteraction(entity: Entity, tile: Entity) {
     const carriage = entity.getMutableComponent(Carriage)
     const unitAlignment = entity.getMutableComponent(Alignment)!
     const possibleResource = tile.getComponent(Resource)
@@ -27,5 +27,4 @@ export function checkForCarriageInteraction(entity : Entity, tile : Entity){
             tile.removeComponent(Resource)
         }
     }
-
 }

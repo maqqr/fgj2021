@@ -162,11 +162,15 @@ export class RenderSystem extends PersistentSystem<RenderSystemState> {
                 pos.y = animatedPos.y
             }
 
+            const coordinateSystem = this.world.getSystem(CoordinateSystem)!
+
             // Units in unrevealed areas are not drawn
-            const revealed = this.world.getSystem(CoordinateSystem).getTileAt(entityPos)?.getComponent(Revealed)
+            const revealed = coordinateSystem.getTileAt(entityPos)?.getComponent(Revealed)
             if (!revealed) {
                 return
             }
+
+            const unknown = coordinateSystem.getTileAt(entityPos)?.getComponent(Revealed)
 
             const unit = entity.getComponent(Unit)!
             const alignment = entity.getComponent(Alignment)

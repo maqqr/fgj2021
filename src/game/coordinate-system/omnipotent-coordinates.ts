@@ -5,8 +5,8 @@ import { Tile, TileType, tileTypeVariationAmount } from "../tiles/tile"
 import { Resource, ResourceType } from "../tiles/resource"
 import { Building } from "../tiles/building"
 
-export const TileWidth = 60
-export const Radius = 20
+export const TileWidth = 20
+export const Radius = 50
 
 const typeWeights = [
     { type: TileType.Forest, weight: 50 },
@@ -126,7 +126,7 @@ export const selectTileType = (totalWeight: number, weights: any) => {
 
 export const selectTileTypePerlin = (totalWeight: number, weights: any, coordinate: {x : number, y : number, z : number}) => {
     const noiseScale = 3;
-    let weighter = noise(coordinate.x / noiseScale, coordinate.y / noiseScale, coordinate.z / noiseScale) * totalWeight
+    let weighter = noise(coordinate.x / noiseScale +2, coordinate.y / noiseScale, coordinate.z / noiseScale + 5) * totalWeight
     if (getDistance(coordinate, {x : 0, y : 0, z : 0}) < 2){
         return TileType.Snow
     }

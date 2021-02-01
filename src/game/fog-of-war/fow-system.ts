@@ -25,13 +25,25 @@ export class FogOfWarSystem extends System {
         }
     }
 
+
+    private knownTile(coord: Coordinate) {
+        const coordSystem = this.world.getSystem(CoordinateSystem)
+        const tileEntity = coordSystem.getTileAt(coord)
+        if (tileEntity && !tileEntity.hasComponent(Revealed)) {
+            tileEntity.addComponent(Revealed)
+        }
+    }
+
     private checkFieldOfView(coord: Coordinate, viewRadius: number) {
-        for (let x = -viewRadius-1; x < viewRadius+1; x++) {
-            for (let y = -viewRadius-1; y < viewRadius+1; y++) {
-                for (let z = -viewRadius-1; z < viewRadius+1; z++) {
+        this.revealTile(coord)
+        for (let x = -viewRadius - 1; x < viewRadius + 1; x++) {
+            for (let y = -viewRadius - 1; y < viewRadius + 1; y++) {
+                for (let z = -viewRadius - 1; z < viewRadius + 1; z++) {
                     if (x + y + z === 0) {
                         const checkCoord = new Coordinate(
-                            { x: coord.x + x, y: coord.y + y, z: coord.z + z})
+                            { x: coord.x + x, y: coord.y + y, z: coord.z + z }
+                        )
+
 
                         if (getDistance(coord, checkCoord) <= viewRadius) {
                             this.revealTile(checkCoord)
